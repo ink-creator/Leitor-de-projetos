@@ -13,13 +13,16 @@ from typing import Callable, Optional
 
 from configuracao.historico import EntradaHistorico, carregar_historico, limpar_historico
 
-COR_FUNDO = "#1e1e2e"
-COR_FUNDO_CARD = "#2a2a3c"
-COR_TEXTO = "#e0e0e8"
-COR_TEXTO_SECUNDARIO = "#9a9ab0"
-COR_SUCESSO = "#4ade80"
-COR_ERRO = "#f87171"
-COR_DESTAQUE = "#818cf8"
+# Nova paleta de cores: tons de azul escuro e preto
+COR_FUNDO = "#0d1b2a"          # fundo principal (azul muito escuro)
+COR_FUNDO_CARD = "#1a2b3c"     # cartões e áreas de conteúdo
+COR_FUNDO_CAMPO = "#16202a"    # campos de entrada
+COR_TEXTO = "#e0e0e8"          # texto principal (claro)
+COR_TEXTO_SECUNDARIO = "#9a9ab0"  # texto secundário
+COR_SUCESSO = "#4ade80"        # verde sucesso
+COR_ERRO = "#f87171"           # vermelho erro
+COR_DESTAQUE = "#3b5b9a"       # azul destaque
+COR_DESTAQUE_HOVER = "#2e4a8a" # hover destaque
 
 
 def _centralizar_janela(janela: tk.Toplevel, largura: int, altura: int) -> None:
@@ -32,9 +35,11 @@ def _centralizar_janela(janela: tk.Toplevel, largura: int, altura: int) -> None:
 
 
 class JanelaPreVisualizacao(tk.Toplevel):
-    """
-    Mostra quais arquivos serão processados e quais serão ignorados,
-    sem abrir o conteúdo dos arquivos — apenas a lista de nomes.
+    """Janela de pré‑visualização que permite ao usuário escolher quais
+    arquivos serão processados. Os arquivos são exibidos em uma Listbox com
+    seleção múltipla; os itens já marcados como processáveis são pré‑selecionados.
+    Ao confirmar, a lista de arquivos selecionados é devolvida ao chamador
+    através do callback ``on_confirmar``.
     """
 
     def __init__(
@@ -43,15 +48,21 @@ class JanelaPreVisualizacao(tk.Toplevel):
         processaveis: list[str],
         ignorados: list[str],
         raiz_projeto: str,
+        on_confirmar: Callable[[list[str], list[str]], None] | None = None,
     ):
         super().__init__(parent)
-        self.title("Pré-visualização")
+        self.title("Pré‑visualização")
         self.configure(bg=COR_FUNDO)
         self.transient(parent)
         self.grab_set()
-        _centralizar_janela(self, 560, 520)
+        _centralizar_janela(self, 560, 560)
 
-        total = len(processaveis) + len(ignorados)
+        self._on_confirmar = on_confirmar
+        # Guardar a lista completa para cálculo posterior
+        self._todos_arquivos = processaveis + ignorados
+        self._raiz_projeto = raiz_projeto
+
+        total = len(self._todos_arquivos)
 
         cabecalho = tk.Frame(self, bg=COR_FUNDO)
         cabecalho.pack(fill="x", padx=20, pady=(16, 8))
@@ -64,7 +75,7 @@ class JanelaPreVisualizacao(tk.Toplevel):
         ).pack(anchor="w")
         tk.Label(
             cabecalho,
-            text=f"Serão processados: {len(processaveis)}      Serão ignorados: {len(ignorados)}",
+            text="Selecione os arquivos que deverão ser processados.",
             font=("Segoe UI", 10),
             bg=COR_FUNDO, fg=COR_TEXTO_SECUNDARIO,
         ).pack(anchor="w", pady=(2, 0))
@@ -75,38 +86,64 @@ class JanelaPreVisualizacao(tk.Toplevel):
         scrollbar = ttk.Scrollbar(container_lista)
         scrollbar.pack(side="right", fill="y")
 
-        texto = tk.Text(
+        self._listbox = tk.Listbox(
             container_lista,
-            bg=COR_FUNDO_CARD, fg=COR_TEXTO,
+            selectmode="multiple",
+            bg=COR_FUNDO_CARD,
+            fg=COR_TEXTO,
             font=("Consolas", 9),
-            wrap="none",
-            yscrollcommand=scrollbar.set,
-            borderwidth=0, highlightthickness=0,
+            borderwidth=0,
+            highlightthickness=0,
         )
-        texto.pack(fill="both", expand=True)
-        scrollbar.config(command=texto.yview)
+        self._listbox.pack(fill="both", expand=True)
+        scrollbar.config(command=self._listbox.yview)
+        self._listbox.config(yscrollcommand=scrollbar.set)
 
-        texto.tag_config("ok", foreground=COR_SUCESSO)
-        texto.tag_config("ignorado", foreground=COR_TEXTO_SECUNDARIO)
-
-        for caminho in processaveis:
+        # Inserir todos os arquivos, marcando os processáveis como selecionados
+        for idx, caminho in enumerate(self._todos_arquivos):
             rel = os.path.relpath(caminho, raiz_projeto)
-            texto.insert("end", f"✓ {rel}\n", "ok")
-
-        for caminho in ignorados:
-            rel = os.path.relpath(caminho, raiz_projeto)
-            texto.insert("end", f"✗ {rel}\n", "ignorado")
-
-        texto.config(state="disabled")
+            self._listbox.insert("end", rel)
+            if caminho in processaveis:
+                self._listbox.selection_set(idx)
 
         rodape = tk.Frame(self, bg=COR_FUNDO)
         rodape.pack(fill="x", padx=20, pady=(8, 16))
 
         tk.Button(
-            rodape, text="Fechar", command=self.destroy,
-            bg=COR_FUNDO_CARD, fg=COR_TEXTO, activebackground=COR_DESTAQUE,
-            relief="flat", padx=16, pady=6, cursor="hand2",
+            rodape,
+            text="Confirmar seleção",
+            command=self._confirmar,
+            bg=COR_DESTAQUE,
+            fg="#1e1e2e",
+            relief="flat",
+            padx=12,
+            pady=6,
+            cursor="hand2",
+        ).pack(side="right", padx=(0, 8))
+
+        tk.Button(
+            rodape,
+            text="Fechar",
+            command=self.destroy,
+            bg=COR_FUNDO_CARD,
+            fg=COR_TEXTO,
+            activebackground=COR_DESTAQUE,
+            relief="flat",
+            padx=12,
+            pady=6,
+            cursor="hand2",
         ).pack(side="right")
+
+    def _confirmar(self) -> None:
+        """Coleta a seleção do usuário e devolve duas listas: arquivos a
+        processar e arquivos a ignorar.
+        """
+        selecionados_idx = set(self._listbox.curselection())
+        selecionados = [self._todos_arquivos[i] for i in selecionados_idx]
+        ignorados = [f for i, f in enumerate(self._todos_arquivos) if i not in selecionados_idx]
+        if self._on_confirmar:
+            self._on_confirmar(selecionados, ignorados)
+        self.destroy()
 
 
 class JanelaConfirmacaoSeguranca(tk.Toplevel):

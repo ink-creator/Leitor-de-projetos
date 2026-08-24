@@ -18,6 +18,39 @@ pip install pyinstaller
 pyinstaller --onefile --windowed --name LeitorDeProjetos main.py
 ```
 
+## Deploy no GitHub (para currículo)
+
+### 1. Commit e push das alterações
+```bash
+git add .
+git commit -m "Melhorias de UI e seleção de arquivos"
+git push origin main
+```
+
+### 2. Criar um repositório no GitHub
+1. Acesse https://github.com e crie um novo repositório (ex.: `Leitor-de-projetos`).
+2. Siga as instruções para conectar o repositório local ao remoto, caso ainda não tenha feito:
+```bash
+git remote add origin https://github.com/SEU_USUARIO/Leitor-de-projetos.git
+git branch -M main
+git push -u origin main
+```
+
+### 3. Configurar GitHub Actions (CI/CD) – opcional
+O projeto já inclui um workflow em `.github/workflows/release.yml` que gera um artefato `.exe` a cada *release*.
+Para utilizá‑lo:
+1. Crie uma *release* na página do repositório (botão **Releases → Draft a new release**).
+2. Defina uma tag (ex.: `v1.0.0`) e publique.
+3. O workflow será disparado, compilando o executável e disponibilizando‑o como artefato da release.
+
+### 4. Atualizar o README do repositório
+Inclua no seu perfil ou currículo o link do repositório e, se desejar, o link direto para a última release, por exemplo:
+```
+https://github.com/SEU_USUARIO/Leitor-de-projetos/releases/latest
+```
+
+Esses passos permitem que recrutadores acessem rapidamente o código‑fonte e o executável pronto para demonstração.
+
 ## Estrutura
 
 ```

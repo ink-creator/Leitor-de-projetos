@@ -31,16 +31,17 @@ from interface.dialogos import (
 from processadores import junto, separado
 from utils.arquivos import obter_pasta_saida_padrao
 
-COR_FUNDO = "#1e1e2e"
-COR_FUNDO_CARD = "#2a2a3c"
-COR_FUNDO_CAMPO = "#232335"
-COR_TEXTO = "#e0e0e8"
-COR_TEXTO_SECUNDARIO = "#9a9ab0"
-COR_SUCESSO = "#4ade80"
-COR_ERRO = "#f87171"
+# Nova paleta de cores: tons de azul escuro e preto (mesma usada em dialogos)
+COR_FUNDO = "#0d1b2a"          # fundo principal (azul muito escuro)
+COR_FUNDO_CARD = "#1a2b3c"     # cartões e áreas de conteúdo
+COR_FUNDO_CAMPO = "#16202a"    # campos de entrada
+COR_TEXTO = "#e0e0e8"          # texto principal (claro)
+COR_TEXTO_SECUNDARIO = "#9a9ab0"  # texto secundário
+COR_SUCESSO = "#4ade80"        # verde sucesso
+COR_ERRO = "#f87171"           # vermelho erro
 COR_AVISO = "#fbbf24"
-COR_DESTAQUE = "#818cf8"
-COR_DESTAQUE_HOVER = "#6d78e8"
+COR_DESTAQUE = "#3b5b9a"       # azul destaque
+COR_DESTAQUE_HOVER = "#2e4a8a" # hover destaque
 
 MODO_ARQUIVO_UNICO = "separado"
 MODO_ARQUIVOS_SEPARADOS = "junto"
@@ -80,6 +81,10 @@ class JanelaPrincipal(tk.Tk):
 
         self._montar_layout()
         self.protocol("WM_DELETE_WINDOW", self._ao_fechar)
+
+        # Variáveis para armazenar seleção de arquivos feita na pré‑visualização
+        self._arquivos_selecionados: list[str] | None = None
+        self._arquivos_ignorados: list[str] | None = None
 
     # ------------------------------------------------------------------
     # Layout
@@ -233,8 +238,9 @@ class JanelaPrincipal(tk.Tk):
         )
         self._label_pasta_saida.pack(side="left", fill="x", expand=True)
 
+        # Renomeado para evitar duplicação de texto de botão "Selecionar pasta"
         tk.Button(
-            linha, text="Selecionar pasta", command=self._selecionar_pasta_saida,
+            linha, text="Selecionar pasta de saída", command=self._selecionar_pasta_saida,
             bg=COR_FUNDO_CAMPO, fg=COR_TEXTO, relief="flat",
             padx=12, pady=6, cursor="hand2", font=("Segoe UI", 9),
         ).pack(side="left", padx=(8, 0))
@@ -341,13 +347,40 @@ class JanelaPrincipal(tk.Tk):
     # ------------------------------------------------------------------
 
     def _pre_visualizar(self) -> None:
+        """Abre a janela de pré‑visualização permitindo ao usuário escolher
+        quais arquivos serão processados. A seleção é armazenada em
+        ``self._arquivos_selecionados`` e ``self._arquivos_ignorados`` para ser
+        utilizada posteriormente na fase de geração.
+        """
         if not self._validar_projeto_selecionado():
             return
 
         processaveis, ignorados = self._listar_arquivos_modo_atual()
-        JanelaPreVisualizacao(self, processaveis, ignorados, self._pasta_projeto)
+        JanelaPreVisualizacao(
+            self,
+            processaveis,
+            ignorados,
+            self._pasta_projeto,
+            on_confirmar=self._atualizar_selecao,
+        )
+
+    def _atualizar_selecao(self, selecionados: list[str], ignorados: list[str]) -> None:
+        """Callback usado pela janela de pré‑visualização para armazenar a
+        escolha do usuário.
+        """
+        self._arquivos_selecionados = selecionados
+        self._arquivos_ignorados = ignorados
+        # Opcional: atualizar algum indicador visual – por enquanto apenas
+        # mantemos a informação para o fluxo de processamento.
 
     def _listar_arquivos_modo_atual(self) -> tuple[list[str], list[str]]:
+        """Retorna as listas de arquivos a processar e a ignorar.
+        Se o usuário já fez uma seleção na pré‑visualização, utiliza essa
+        seleção; caso contrário, calcula a partir da configuração.
+        """
+        if self._arquivos_selecionados is not None and self._arquivos_ignorados is not None:
+            return self._arquivos_selecionados, self._arquivos_ignorados
+
         modo = self._modo.get()
         if modo == MODO_ARQUIVO_UNICO:
             extensoes = tuple(self._config["extensoes_separado"])
@@ -436,6 +469,7 @@ class JanelaPrincipal(tk.Tk):
                         arquivos_ignorados=self._config["arquivos_ignorados"],
                         on_progresso=on_progresso,
                         on_erro=on_erro,
+                        arquivos_processaveis=self._arquivos_selecionados,
                     )
                 else:
                     nome_subpasta = f"resumo_{datetime.datetime.now():%d-%m-%Y_%Hh}"
@@ -448,6 +482,7 @@ class JanelaPrincipal(tk.Tk):
                         arquivos_ignorados=self._config["arquivos_ignorados"],
                         on_progresso=on_progresso,
                         on_erro=on_erro,
+                        arquivos_processaveis=self._arquivos_selecionados,
                     )
                 self._fila_eventos.put(("concluido", resultado))
             except Exception as e:

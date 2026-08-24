@@ -95,6 +95,7 @@ def processar(
     arquivos_ignorados: list[str],
     on_progresso: Optional[ProgressoCallback] = None,
     on_erro: Optional[ErroCallback] = None,
+    arquivos_processaveis: list[str] | None = None,
 ) -> ResultadoProcessamento:
     """
     Executa o processamento "arquivos separados": para cada arquivo
@@ -103,9 +104,14 @@ def processar(
 
     Deve ser chamado a partir de uma thread separada da UI.
     """
-    processaveis, ignorados_lista, sensiveis = listar_arquivos_projeto(
-        caminho_projeto, extensoes, pastas_ignoradas, arquivos_ignorados
-    )
+    if arquivos_processaveis is not None:
+        processaveis = arquivos_processaveis
+        ignorados_lista: list[str] = []
+        sensiveis = 0
+    else:
+        processaveis, ignorados_lista, sensiveis = listar_arquivos_projeto(
+            caminho_projeto, extensoes, pastas_ignoradas, arquivos_ignorados
+        )
 
     Path(caminho_saida_dir).mkdir(parents=True, exist_ok=True)
 

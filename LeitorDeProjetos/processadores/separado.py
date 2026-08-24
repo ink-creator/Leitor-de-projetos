@@ -105,6 +105,7 @@ def processar(
     arquivos_ignorados: list[str],
     on_progresso: Optional[ProgressoCallback] = None,
     on_erro: Optional[ErroCallback] = None,
+    arquivos_processaveis: list[str] | None = None,
 ) -> ResultadoProcessamento:
     """
     Executa o processamento "arquivo único": percorre o projeto e
@@ -114,9 +115,18 @@ def processar(
     Deve ser chamado a partir de uma thread separada da UI — esta
     função é bloqueante e não gerencia threading por conta própria.
     """
-    processaveis, ignorados_lista, sensiveis = listar_arquivos_projeto(
-        caminho_projeto, extensoes, pastas_ignoradas, arquivos_ignorados
-    )
+    # Se a lista de arquivos processáveis já foi determinada (ex.: via UI),
+    # use-a diretamente; caso contrário, descubra-a a partir do disco.
+    if arquivos_processaveis is not None:
+        processaveis = arquivos_processaveis
+        # Quando a lista já foi filtrada, consideramos que não há arquivos
+        # sensíveis adicionais a contar.
+        ignorados_lista: list[str] = []
+        sensiveis = 0
+    else:
+        processaveis, ignorados_lista, sensiveis = listar_arquivos_projeto(
+            caminho_projeto, extensoes, pastas_ignoradas, arquivos_ignorados
+        )
 
     Path(caminho_saida_dir).mkdir(parents=True, exist_ok=True)
     caminho_arquivo_saida = os.path.join(caminho_saida_dir, nome_arquivo_saida)
