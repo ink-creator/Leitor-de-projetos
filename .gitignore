@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+ENV/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Configurações/dados locais (o app já salva isso em %APPDATA%, nunca no repo)
+*.log
+
+# Segredos — nunca versionar
+.env
+.env.*
+*.env
+
+# IDE
+.vscode/
+.idea/
+
+# SO
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Saídas de teste eventuais
+/saida*/
+/output*/
