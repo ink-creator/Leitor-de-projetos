@@ -27,7 +27,6 @@ __pycache__/
 # IDE
 .vscode/
 .idea/
-.github/
 build/
 
 # SO
