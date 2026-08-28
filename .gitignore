@@ -22,10 +22,13 @@ dist/
 .env
 .env.*
 *.env
+__pycache__/
 
 # IDE
 .vscode/
 .idea/
+.github/
+build/
 
 # SO
 Thumbs.db
