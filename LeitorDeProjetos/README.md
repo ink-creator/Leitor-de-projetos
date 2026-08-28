@@ -1,130 +1,113 @@
-# Leitor de Projetos
+# Leitor de Projetos -- English
 
-Transforma projetos de código em arquivos de texto para análise,
-documentação, compartilhamento e uso com IAs.
+**What it does**
+Transforms a source‑code project into plain‑text files that can be read by AI tools, documentation generators, or shared with teammates.
 
-## Executar
+## Quick start (source version)
+1. **Clone or download the repository**
+   ```bash
+   git clone https://github.com/SEU_USUARIO/Leitor-de-projetos.git
+   cd Leitor-de-projetos
+   ```
+2. **Install the required package** (only `pyinstaller` is needed for building the executable; the app itself uses only the Python standard library)
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate   # on Windows
+   pip install -r requirements.txt   # if you have a requirements file, otherwise just `pip install pyinstaller`
+   ```
+3. **Run the GUI**
+   ```bash
+   python LeitorDeProjetos/main.py
+   ```
+   The window lets you select a project folder, choose the processing mode (single file or separate files), and optionally pick which files to include via the *Pré‑visualizar* step.
 
-```
-python main.py
-```
+## Running the compiled executable
+If you prefer not to install Python, you can use the pre‑built **LeitorDeProjetos.exe**:
+1. Download the `.exe` from the latest GitHub **Release** (see the *Releases* tab of the repository).
+2. Double‑click the file – no installation or configuration is required. The first time it runs Windows may show a warning about an unknown publisher; click *Run anyway*.
 
-Sem dependências externas — apenas biblioteca padrão (Tkinter).
-
-## Empacotar como .exe
-
-```
-pip install pyinstaller
-pyinstaller --onefile --windowed --name LeitorDeProjetos main.py
-```
-
-## Deploy no GitHub (para currículo)
-
-### 1. Commit e push das alterações
+## Building the .exe yourself (optional)
 ```bash
-git add .
-git commit -m "Melhorias de UI e seleção de arquivos"
-git push origin main
+pyinstaller --onefile --windowed --name LeitorDeProjetos LeitorDeProjetos/main.py
 ```
+The resulting `dist/LeitorDeProjetos.exe` can be uploaded as a release asset.
 
-### 2. Criar um repositório no GitHub
-1. Acesse https://github.com e crie um novo repositório (ex.: `Leitor-de-projetos`).
-2. Siga as instruções para conectar o repositório local ao remoto, caso ainda não tenha feito:
+## Publishing the executable on GitHub
+1. **Create a release** on GitHub (Releases → *Draft a new release*).
+2. Give it a tag, e.g. `v1.0.0`, and a title.
+3. Drag the `LeitorDeProjetos.exe` file into the *Attach binaries* area and publish the release.
+   Users can then download the single executable without needing any other files.
+
+## Configuration (optional)
+The application stores its settings (last used folder, selected mode, window size, etc.) in a JSON file located next to the script/executable. You can edit it manually if you need to change defaults, but the GUI already provides a *Configurações* dialog for adding/removing file extensions and ignored folders/files.
+
+---
+*Feel free to open an issue or submit a pull request if you find bugs or want new features.*
+
+
+# Leitor de Projetos -- Português
+
+## O que ele faz
+
+Transforma um projeto de código-fonte em arquivos de texto simples que podem ser lidos por ferramentas de IA, geradores de documentação ou compartilhados com outros desenvolvedores.
+
+## Início rápido (versão do código-fonte)
+
+1. **Clone ou baixe o repositório**
+
+   ```bash
+   git clone https://github.com/SEU_USUARIO/Leitor-de-projetos.git
+   cd Leitor-de-projetos
+   ```
+
+2. **Instale o pacote necessário**
+
+   Apenas o `pyinstaller` é necessário para criar o executável. O aplicativo em si utiliza apenas a biblioteca padrão do Python.
+
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate   # no Windows
+   pip install -r requirements.txt   # se você tiver um arquivo requirements.txt; caso contrário, use `pip install pyinstaller`
+   ```
+
+3. **Execute a interface gráfica**
+
+   ```bash
+   python LeitorDeProjetos/main.py
+   ```
+
+   A janela permite selecionar uma pasta de projeto, escolher o modo de processamento (arquivo único ou arquivos separados) e, opcionalmente, selecionar quais arquivos incluir através da etapa **Pré-visualizar**.
+
+## Executando o executável compilado
+
+Se você preferir não instalar o Python, pode utilizar o **LeitorDeProjetos.exe** pré-compilado:
+
+1. Baixe o `.exe` na **Release** mais recente do GitHub (na aba **Releases** do repositório).
+2. Dê dois cliques no arquivo — nenhuma instalação ou configuração é necessária.
+3. Na primeira execução, o Windows pode exibir um aviso sobre um editor desconhecido. Clique em **Executar assim mesmo**.
+
+## Criando o `.exe` por conta própria (opcional)
+
 ```bash
-git remote add origin https://github.com/SEU_USUARIO/Leitor-de-projetos.git
-git branch -M main
-git push -u origin main
+pyinstaller --onefile --windowed --name LeitorDeProjetos LeitorDeProjetos/main.py
 ```
 
-### 3. Configurar GitHub Actions (CI/CD) – opcional
-O projeto já inclui um workflow em `.github/workflows/release.yml` que gera um artefato `.exe` a cada *release*.
-Para utilizá‑lo:
-1. Crie uma *release* na página do repositório (botão **Releases → Draft a new release**).
-2. Defina uma tag (ex.: `v1.0.0`) e publique.
-3. O workflow será disparado, compilando o executável e disponibilizando‑o como artefato da release.
+O arquivo resultante, `dist/LeitorDeProjetos.exe`, pode ser enviado como um arquivo da release.
 
-### 4. Atualizar o README do repositório
-Inclua no seu perfil ou currículo o link do repositório e, se desejar, o link direto para a última release, por exemplo:
-```
-https://github.com/SEU_USUARIO/Leitor-de-projetos/releases/latest
-```
+## Publicando o executável no GitHub
 
-Esses passos permitem que recrutadores acessem rapidamente o código‑fonte e o executável pronto para demonstração.
+1. **Crie uma release** no GitHub: Releases → **Draft a new release**.
+2. Defina uma tag, por exemplo `v1.0.0`, e um título.
+3. Arraste o arquivo `LeitorDeProjetos.exe` para a área **Attach binaries** e publique a release.
 
-## Estrutura
+Os usuários poderão então baixar apenas o executável, sem precisar instalar nenhum outro arquivo.
 
-```
-LeitorDeProjetos/
-├── main.py                      # entrypoint
-├── interface/
-│   ├── janela_principal.py      # orquestração da UI
-│   ├── configuracoes.py         # painel de extensões e ignorados
-│   └── dialogos.py              # pré-visualização, confirmação, ajuda, histórico
-├── processadores/
-│   ├── separado.py              # modo "Arquivo único"
-│   └── junto.py                 # modo "Arquivos separados"
-├── configuracao/
-│   ├── config.py                # persistência de preferências
-│   └── historico.py             # persistência de histórico
-└── utils/
-    └── arquivos.py              # paths dinâmicos, detecção de arquivo sensível
-```
+## Configuração (opcional)
 
-## Decisões tomadas em relação aos scripts originais
+O aplicativo armazena suas configurações (última pasta utilizada, modo selecionado, tamanho da janela etc.) em um arquivo JSON localizado ao lado do script ou executável.
 
-Os nomes dos arquivos fonte originais (`ler_projeto_separado.py`,
-`ler_projeto_junto.py`) descreviam o oposto do que a lógica de cada
-um faz. A lógica foi 100% preservada; os nomes exibidos na interface
-foram corrigidos:
+Você pode editá-lo manualmente caso precise alterar os valores padrão, mas a interface gráfica já oferece uma janela de **Configurações** para adicionar ou remover extensões de arquivos e pastas/arquivos ignorados.
 
-| Arquivo original            | Comportamento real                  | Nome na interface   |
-|------------------------------|--------------------------------------|----------------------|
-| `ler_projeto_separado.py`   | gera **um único** arquivo TXT        | **Arquivo único**    |
-| `ler_projeto_junto.py`      | gera **um TXT por arquivo**          | **Arquivos separados** |
+---
 
-Outras mudanças de comportamento, autorizadas explicitamente durante
-o desenvolvimento (não são "reescrita da lógica de processamento"):
-
-- **Bloqueio real de `.env`**: nos scripts originais, `.env` só era
-  ignorado se aparecesse como nome de *pasta*. Como arquivo, na raiz
-  do projeto, ele passava despercebido. Isso contradizia a exigência
-  de segurança da especificação e foi corrigido em
-  `utils/arquivos.py::eh_arquivo_sensivel`, que verifica pelo nome do
-  arquivo antes de qualquer outra regra, em ambos os modos.
-- **Remoção de `print()`**: os scripts imprimiam cada linha no
-  console. Substituído por callbacks de progresso (`on_progresso`,
-  `on_erro`) consumidos pela thread da interface.
-- **Extensões dos dois modos não foram unificadas** — por decisão
-  explícita, cada modo mantém sua própria lista padrão:
-  - Arquivo único: `.py .js .html .css .php .md .txt .bat`
-  - Arquivos separados: `.php .css .js`
-- **`.gitignore` e `pyvenv.cfg`** removidos de `IGNORAR_PASTAS` no
-  script original — eram nomes de *arquivo* numa lista comparada
-  apenas contra nomes de *pasta* (`os.path.isdir`), então nunca
-  tinham efeito algum. Remoção não altera comportamento observável.
-- **`src` removido do padrão de pastas ignoradas** do modo Arquivo
-  único (só existia lá, não no outro modo). Ignorar todo código-fonte
-  contradiz o propósito da ferramenta; continua disponível para
-  adicionar manualmente em Configurações.
-
-## O que foi validado neste ambiente
-
-Testado ponta a ponta com display virtual (Xvfb) simulando o fluxo
-real pela janela: seleção de projeto, pré-visualização, processamento
-nos dois modos, thread não bloqueando a UI, `.env` bloqueado e
-confirmado sem vazamento no conteúdo de saída em ambos os modos,
-erro de leitura (arquivo com bytes inválidos) isolado sem interromper
-o restante do processamento, histórico gravando corretamente,
-configuração persistindo e recarregando.
-
-**Não testado** (o ambiente de desenvolvimento é Linux, não Windows):
-geração do `.exe` via PyInstaller, `os.startfile` (usado em "Abrir
-pasta" — código Windows-only, caminho testado apenas nos ramos
-`darwin`/outros), comportamento real de `PermissionError` do Windows
-(neste ambiente os testes rodaram como root, que ignora permissões de
-arquivo Unix; usei um arquivo com bytes inválidos para exercitar o
-branch de tratamento de erro, mas é um caminho de código diferente do
-`PermissionError` real do Windows, ainda que a estrutura do
-`try/except` cubra ambos). Recomendo testar essas duas coisas
-(build do `.exe` e "Abrir pasta"/"Abrir resultado") em uma máquina
-Windows real antes de considerar finalizado.
+Sinta-se à vontade para abrir uma issue ou enviar um pull request caso encontre algum problema ou queira sugerir novas funcionalidades.
