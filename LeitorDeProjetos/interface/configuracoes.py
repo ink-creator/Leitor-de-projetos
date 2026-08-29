@@ -15,12 +15,12 @@ from configuracao.config import (
     restaurar_pastas_ignoradas_padrao,
 )
 
-COR_FUNDO = "#1e1e2e"
-COR_FUNDO_CARD = "#2a2a3c"
-COR_TEXTO = "#e0e0e8"
-COR_TEXTO_SECUNDARIO = "#9a9ab0"
-COR_ERRO = "#f87171"
-COR_DESTAQUE = "#818cf8"
+COR_FUNDO = "#0b1220"
+COR_FUNDO_CARD = "#111c2e"
+COR_TEXTO = "#f4f7fb"
+COR_TEXTO_SECUNDARIO = "#9fb0c8"
+COR_ERRO = "#fb7185"
+COR_DESTAQUE = "#4f8cff"
 
 ARQUIVO_PROTEGIDO = ".env"
 
@@ -31,8 +31,8 @@ class JanelaConfiguracoes(tk.Toplevel):
         self.title("Configurações")
         self.configure(bg=COR_FUNDO)
         self.transient(parent)
-        self.grab_set()
         self.geometry("560x560")
+        self.protocol("WM_DELETE_WINDOW", self._fechar)
 
         self._config = dict(config)
         self._on_salvar = on_salvar

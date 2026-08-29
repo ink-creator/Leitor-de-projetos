@@ -22,21 +22,22 @@ Transforms a source‑code project into plain‑text files that can be read by A
    The window lets you select a project folder, choose the processing mode (single file or separate files), and optionally pick which files to include via the *Pré‑visualizar* step.
 
 ## Running the compiled executable
-If you prefer not to install Python, you can use the pre‑built **LeitorDeProjetos.exe**:
-1. Download the `.exe` from the latest GitHub **Release** (see the *Releases* tab of the repository).
+If you prefer not to install Python, you can use the pre-built **LeitorDeProjetos-1.0.3.exe**:
+1. Download the `.exe` from the latest GitHub [**Release**](https://github.com/ink-creator/Leitor-de-projetos/releases).
 2. Double‑click the file – no installation or configuration is required. The first time it runs Windows may show a warning about an unknown publisher; click *Run anyway*.
 
 ## Building the .exe yourself (optional)
 ```bash
-pyinstaller --onefile --windowed --name LeitorDeProjetos LeitorDeProjetos/main.py
+pyinstaller --onefile --windowed --name LeitorDeProjetos-1.0.3 LeitorDeProjetos/main.py
 ```
-The resulting `dist/LeitorDeProjetos.exe` can be uploaded as a release asset.
+The resulting `dist/LeitorDeProjetos-1.0.3.exe` can be uploaded as a release asset.
 
 ## Publishing the executable on GitHub
-1. **Create a release** on GitHub (Releases → *Draft a new release*).
-2. Give it a tag, e.g. `v1.0.0`, and a title.
-3. Drag the `LeitorDeProjetos.exe` file into the *Attach binaries* area and publish the release.
-   Users can then download the single executable without needing any other files.
+1. Commit and push the source code to GitHub.
+2. Create the tag with `git tag v1.0.3`.
+3. Send it with `git push origin v1.0.3`.
+
+GitHub Actions will build and publish `LeitorDeProjetos-1.0.3.exe` automatically on the **Releases** page.
 
 ## Configuration (optional)
 The application stores its settings (last used folder, selected mode, window size, etc.) in a JSON file located next to the script/executable. You can edit it manually if you need to change defaults, but the GUI already provides a *Configurações* dialog for adding/removing file extensions and ignored folders/files.
@@ -80,27 +81,27 @@ Transforma um projeto de código-fonte em arquivos de texto simples que podem se
 
 ## Executando o executável compilado
 
-Se você preferir não instalar o Python, pode utilizar o **LeitorDeProjetos.exe** pré-compilado:
+Se você preferir não instalar o Python, pode utilizar o **LeitorDeProjetos-1.0.3.exe** pré-compilado:
 
-1. Baixe o `.exe` na **Release** mais recente do GitHub (na aba **Releases** do repositório).
+1. Baixe o `.exe` na [**Release** mais recente do GitHub](https://github.com/ink-creator/Leitor-de-projetos/releases).
 2. Dê dois cliques no arquivo — nenhuma instalação ou configuração é necessária.
 3. Na primeira execução, o Windows pode exibir um aviso sobre um editor desconhecido. Clique em **Executar assim mesmo**.
 
 ## Criando o `.exe` por conta própria (opcional)
 
 ```bash
-pyinstaller --onefile --windowed --name LeitorDeProjetos LeitorDeProjetos/main.py
+pyinstaller --onefile --windowed --name LeitorDeProjetos-1.0.3 LeitorDeProjetos/main.py
 ```
 
-O arquivo resultante, `dist/LeitorDeProjetos.exe`, pode ser enviado como um arquivo da release.
+O arquivo resultante, `dist/LeitorDeProjetos-1.0.3.exe`, pode ser enviado como um arquivo da release.
 
 ## Publicando o executável no GitHub
 
-1. **Crie uma release** no GitHub: Releases → **Draft a new release**.
-2. Defina uma tag, por exemplo `v1.0.0`, e um título.
-3. Arraste o arquivo `LeitorDeProjetos.exe` para a área **Attach binaries** e publique a release.
+1. Faça o commit e envie o código-fonte ao GitHub.
+2. Crie a tag com `git tag v1.0.3`.
+3. Envie-a com `git push origin v1.0.3`.
 
-Os usuários poderão então baixar apenas o executável, sem precisar instalar nenhum outro arquivo.
+O GitHub Actions criará e publicará automaticamente o `LeitorDeProjetos-1.0.3.exe` na página **Releases**.
 
 ## Configuração (opcional)
 

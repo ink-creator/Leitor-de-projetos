@@ -33,9 +33,9 @@ There are two main ways to use the project.
 
 ### Executable
 
-For users who do not have Python installed, or simply want to use the tool directly, a compiled `.exe` version is available.
+For users who do not have Python installed, or simply want to use the tool directly, the compiled **LeitorDeProjetos-1.0.3.exe** is available.
 
-Download the executable available in the repository and run it.
+Open the repository's [**Releases** page](https://github.com/ink-creator/Leitor-de-projetos/releases), select the latest release and download the `.exe` under **Assets**.
 
 This is the recommended option for users who only want to use the program without modifying its source code.
 
@@ -199,9 +199,9 @@ Existem duas formas principais de utilizar o projeto.
 
 ### Executável
 
-Para quem não possui Python ou simplesmente quer utilizar a ferramenta diretamente, existe uma versão compilada em `.exe`.
+Para quem não possui Python ou simplesmente quer utilizar a ferramenta diretamente, está disponível o **LeitorDeProjetos-1.0.3.exe**.
 
-Basta baixar o executável disponível no repositório e executá-lo.
+Abra a página [**Releases** do repositório](https://github.com/ink-creator/Leitor-de-projetos/releases), entre na versão mais recente e baixe o `.exe` na seção **Assets**.
 
 Essa é a forma recomendada para quem quer apenas utilizar o programa sem modificar seu código.
 

@@ -31,20 +31,21 @@ from interface.dialogos import (
 from processadores import junto, separado
 from utils.arquivos import obter_pasta_saida_padrao
 
-# Nova paleta de cores: tons de azul escuro e preto (mesma usada em dialogos)
-COR_FUNDO = "#0d1b2a"          # fundo principal (azul muito escuro)
-COR_FUNDO_CARD = "#1a2b3c"     # cartões e áreas de conteúdo
-COR_FUNDO_CAMPO = "#16202a"    # campos de entrada
-COR_TEXTO = "#e0e0e8"          # texto principal (claro)
-COR_TEXTO_SECUNDARIO = "#9a9ab0"  # texto secundário
-COR_SUCESSO = "#4ade80"        # verde sucesso
-COR_ERRO = "#f87171"           # vermelho erro
+# Paleta com contraste alto e aparência próxima aos aplicativos atuais do Windows.
+COR_FUNDO = "#0b1220"
+COR_FUNDO_CARD = "#111c2e"
+COR_FUNDO_CAMPO = "#18263d"
+COR_TEXTO = "#f4f7fb"
+COR_TEXTO_SECUNDARIO = "#9fb0c8"
+COR_SUCESSO = "#4ade80"
+COR_ERRO = "#fb7185"
 COR_AVISO = "#fbbf24"
-COR_DESTAQUE = "#3b5b9a"       # azul destaque
-COR_DESTAQUE_HOVER = "#2e4a8a" # hover destaque
+COR_DESTAQUE = "#4f8cff"
+COR_DESTAQUE_HOVER = "#3978e6"
 
 MODO_ARQUIVO_UNICO = "separado"
 MODO_ARQUIVOS_SEPARADOS = "junto"
+VERSAO = "1.0.3"
 
 DESCRICAO_MODO = {
     MODO_ARQUIVO_UNICO: "Cria um único arquivo TXT contendo a estrutura e o conteúdo dos arquivos selecionados.",
@@ -61,8 +62,10 @@ class JanelaPrincipal(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.title("Leitor de Projetos")
+        self.title(f"Leitor de Projetos {VERSAO}")
         self.configure(bg=COR_FUNDO)
+        self._fechando = False
+        self._after_fila: str | None = None
 
         self._config = carregar_config()
 
@@ -82,9 +85,22 @@ class JanelaPrincipal(tk.Tk):
         self._montar_layout()
         self.protocol("WM_DELETE_WINDOW", self._ao_fechar)
 
+        # ``zoomed`` maximiza a janela, mas preserva a moldura nativa do
+        # Windows (minimizar, restaurar e fechar). É diferente de fullscreen.
+        self.after_idle(self._maximizar)
+
         # Variáveis para armazenar seleção de arquivos feita na pré‑visualização
         self._arquivos_selecionados: list[str] | None = None
         self._arquivos_ignorados: list[str] | None = None
+
+    def _maximizar(self) -> None:
+        if self._fechando:
+            return
+        try:
+            self.state("zoomed")
+        except tk.TclError:
+            # Fallback útil caso a aplicação seja executada fora do Windows.
+            self.attributes("-zoomed", True)
 
     # ------------------------------------------------------------------
     # Layout
@@ -92,24 +108,24 @@ class JanelaPrincipal(tk.Tk):
 
     def _montar_layout(self) -> None:
         topo = tk.Frame(self, bg=COR_FUNDO)
-        topo.pack(fill="x", padx=24, pady=(20, 4))
+        topo.pack(fill="x", padx=40, pady=(28, 4))
 
         tk.Label(
             topo, text="Leitor de Projetos",
-            font=("Segoe UI", 16, "bold"),
+            font=("Segoe UI Variable Display", 22, "bold"),
             bg=COR_FUNDO, fg=COR_TEXTO,
         ).pack(anchor="w")
         tk.Label(
             topo,
             text="Ferramenta para transformar projetos de código em arquivos de texto\n"
                  "para análise, compartilhamento e uso com IAs.",
-            font=("Segoe UI", 9),
+            font=("Segoe UI", 10),
             bg=COR_FUNDO, fg=COR_TEXTO_SECUNDARIO,
             justify="left",
         ).pack(anchor="w", pady=(2, 0))
 
         barra_acoes = tk.Frame(self, bg=COR_FUNDO)
-        barra_acoes.pack(fill="x", padx=24, pady=(12, 0))
+        barra_acoes.pack(fill="x", padx=40, pady=(14, 0))
 
         for texto, comando in [
             ("Configurações", self._abrir_configuracoes),
@@ -118,13 +134,14 @@ class JanelaPrincipal(tk.Tk):
         ]:
             tk.Button(
                 barra_acoes, text=texto, command=comando,
-                bg=COR_FUNDO_CARD, fg=COR_TEXTO_SECUNDARIO,
-                relief="flat", padx=12, pady=4, cursor="hand2",
+                bg=COR_FUNDO_CARD, fg=COR_TEXTO,
+                activebackground=COR_FUNDO_CAMPO, activeforeground=COR_TEXTO,
+                relief="flat", bd=0, padx=14, pady=7, cursor="hand2",
                 font=("Segoe UI", 9),
             ).pack(side="left", padx=(0, 8))
 
         corpo = tk.Frame(self, bg=COR_FUNDO)
-        corpo.pack(fill="both", expand=True, padx=24, pady=16)
+        corpo.pack(fill="both", expand=True, padx=40, pady=20)
 
         self._montar_secao_projeto(corpo)
         self._montar_secao_modo(corpo)
@@ -133,8 +150,11 @@ class JanelaPrincipal(tk.Tk):
         self._montar_barra_inferior(corpo)
 
     def _card(self, parent: tk.Widget) -> tk.Frame:
-        card = tk.Frame(parent, bg=COR_FUNDO_CARD)
-        card.pack(fill="x", pady=(0, 12))
+        card = tk.Frame(
+            parent, bg=COR_FUNDO_CARD,
+            highlightthickness=1, highlightbackground="#20314d",
+        )
+        card.pack(fill="x", pady=(0, 14))
         return card
 
     def _montar_secao_projeto(self, parent: tk.Widget) -> None:
@@ -161,7 +181,8 @@ class JanelaPrincipal(tk.Tk):
 
         tk.Button(
             linha, text="Selecionar pasta", command=self._selecionar_pasta_projeto,
-            bg=COR_DESTAQUE, fg="#1e1e2e", relief="flat",
+            bg=COR_DESTAQUE, fg="#ffffff", activebackground=COR_DESTAQUE_HOVER,
+            activeforeground="#ffffff", relief="flat", bd=0,
             padx=12, pady=6, cursor="hand2", font=("Segoe UI", 9, "bold"),
         ).pack(side="left", padx=(8, 0))
 
@@ -297,7 +318,8 @@ class JanelaPrincipal(tk.Tk):
         self._botao_gerar = tk.Button(
             self._barra_inferior, text="Gerar arquivos",
             command=self._iniciar_fluxo_processamento,
-            bg=COR_DESTAQUE, fg="#1e1e2e", relief="flat",
+            bg=COR_DESTAQUE, fg="#ffffff", activebackground=COR_DESTAQUE_HOVER,
+            activeforeground="#ffffff", relief="flat", bd=0,
             padx=24, pady=10, cursor="hand2",
             font=("Segoe UI", 11, "bold"),
         )
@@ -490,9 +512,11 @@ class JanelaPrincipal(tk.Tk):
 
         self._thread_processamento = threading.Thread(target=worker, daemon=True)
         self._thread_processamento.start()
-        self.after(80, self._checar_fila_eventos)
+        self._after_fila = self.after(80, self._checar_fila_eventos)
 
     def _checar_fila_eventos(self) -> None:
+        if self._fechando:
+            return
         try:
             while True:
                 tipo, dados = self._fila_eventos.get_nowait()
@@ -527,7 +551,7 @@ class JanelaPrincipal(tk.Tk):
         except queue.Empty:
             pass
 
-        self.after(80, self._checar_fila_eventos)
+        self._after_fila = self.after(80, self._checar_fila_eventos)
 
     def _finalizar_processamento(self, resultado) -> None:
         self._botao_gerar.config(state="normal")
@@ -549,41 +573,60 @@ class JanelaPrincipal(tk.Tk):
 
     def _mostrar_resultado(self, resultado) -> None:
         janela = tk.Toplevel(self)
-        janela.title("Processamento concluído")
+        janela.title("Transferência concluída")
         janela.configure(bg=COR_FUNDO)
         janela.transient(self)
-        janela.grab_set()
         janela.resizable(False, False)
+        janela.protocol("WM_DELETE_WINDOW", janela.destroy)
 
         corpo = tk.Frame(janela, bg=COR_FUNDO)
-        corpo.pack(padx=28, pady=24)
+        corpo.pack(fill="both", expand=True, padx=30, pady=26)
 
         tk.Label(
-            corpo, text="Processamento concluído.",
-            font=("Segoe UI", 13, "bold"),
+            corpo, text="✓  Transferência concluída",
+            font=("Segoe UI Variable Display", 17, "bold"),
             bg=COR_FUNDO, fg=COR_SUCESSO,
-        ).pack(anchor="w", pady=(0, 12))
+        ).pack(anchor="w")
+        tk.Label(
+            corpo, text="Os arquivos foram gerados com sucesso.",
+            font=("Segoe UI", 10), bg=COR_FUNDO, fg=COR_TEXTO_SECUNDARIO,
+        ).pack(anchor="w", pady=(4, 18))
 
-        linhas = [
-            f"Arquivos encontrados: {resultado.encontrados}",
-            f"Arquivos processados: {resultado.processados}",
-            f"Arquivos ignorados: {resultado.ignorados}",
-            f"Erros: {len(resultado.erros)}",
+        resumo = tk.Frame(corpo, bg=COR_FUNDO)
+        resumo.pack(fill="x")
+        metricas = [
+            ("ENCONTRADOS", resultado.encontrados),
+            ("PROCESSADOS", resultado.processados),
+            ("IGNORADOS", resultado.ignorados),
+            ("ERROS", len(resultado.erros)),
         ]
-        for linha in linhas:
+        for coluna, (rotulo, valor) in enumerate(metricas):
+            card = tk.Frame(
+                resumo, bg=COR_FUNDO_CARD,
+                highlightthickness=1, highlightbackground="#20314d",
+            )
+            card.grid(row=0, column=coluna, sticky="ew", padx=(0 if coluna == 0 else 4, 0))
+            resumo.grid_columnconfigure(coluna, weight=1)
             tk.Label(
-                corpo, text=linha, font=("Segoe UI", 10),
-                bg=COR_FUNDO, fg=COR_TEXTO,
-            ).pack(anchor="w")
+                card, text=str(valor), font=("Segoe UI", 16, "bold"),
+                bg=COR_FUNDO_CARD, fg=COR_TEXTO,
+            ).pack(pady=(10, 0))
+            tk.Label(
+                card, text=rotulo, font=("Segoe UI", 8, "bold"),
+                bg=COR_FUNDO_CARD, fg=COR_TEXTO_SECUNDARIO,
+            ).pack(pady=(1, 10), padx=10)
 
         tk.Label(
-            corpo, text="\nResultado:", font=("Segoe UI", 10, "bold"),
+            corpo, text="Salvo em", font=("Segoe UI", 9, "bold"),
             bg=COR_FUNDO, fg=COR_TEXTO,
-        ).pack(anchor="w")
+        ).pack(anchor="w", pady=(18, 6))
+        caminho_box = tk.Frame(corpo, bg=COR_FUNDO_CAMPO)
+        caminho_box.pack(fill="x")
         tk.Label(
-            corpo, text=resultado.caminho_saida, font=("Consolas", 9),
-            bg=COR_FUNDO, fg=COR_TEXTO_SECUNDARIO, wraplength=420, justify="left",
-        ).pack(anchor="w")
+            caminho_box, text=resultado.caminho_saida, font=("Consolas", 9),
+            bg=COR_FUNDO_CAMPO, fg=COR_TEXTO_SECUNDARIO,
+            wraplength=540, justify="left", anchor="w", padx=12, pady=10,
+        ).pack(fill="x")
 
         botoes = tk.Frame(corpo, bg=COR_FUNDO)
         botoes.pack(fill="x", pady=(20, 0))
@@ -593,26 +636,32 @@ class JanelaPrincipal(tk.Tk):
             alvo = caminho if os.path.isdir(caminho) else os.path.dirname(caminho)
             self._abrir_no_explorador(alvo)
 
-        def novo_processamento() -> None:
-            janela.destroy()
+        tk.Button(
+            botoes, text="Abrir local do resultado", command=abrir_resultado,
+            bg=COR_DESTAQUE, fg="#ffffff", activebackground=COR_DESTAQUE_HOVER,
+            activeforeground="#ffffff", relief="flat", bd=0,
+            padx=16, pady=9, cursor="hand2", font=("Segoe UI", 9, "bold"),
+        ).pack(side="left")
 
         tk.Button(
-            botoes, text="Abrir resultado", command=abrir_resultado,
-            bg=COR_DESTAQUE, fg="#1e1e2e", relief="flat",
-            padx=14, pady=8, cursor="hand2", font=("Segoe UI", 9, "bold"),
-        ).pack(side="left", padx=(0, 8))
-
-        tk.Button(
-            botoes, text="Abrir pasta", command=abrir_resultado,
-            bg=COR_FUNDO_CARD, fg=COR_TEXTO, relief="flat",
-            padx=14, pady=8, cursor="hand2", font=("Segoe UI", 9),
-        ).pack(side="left", padx=(0, 8))
-
-        tk.Button(
-            botoes, text="Novo processamento", command=novo_processamento,
+            botoes, text="Fechar aplicativo", command=self._ao_fechar,
             bg=COR_FUNDO_CARD, fg=COR_TEXTO_SECUNDARIO, relief="flat",
             padx=14, pady=8, cursor="hand2", font=("Segoe UI", 9),
-        ).pack(side="left")
+        ).pack(side="right", padx=(8, 0))
+        tk.Button(
+            botoes, text="Continuar", command=janela.destroy,
+            bg=COR_FUNDO_CAMPO, fg=COR_TEXTO, relief="flat",
+            padx=14, pady=8, cursor="hand2", font=("Segoe UI", 9),
+        ).pack(side="right")
+
+        janela.update_idletasks()
+        largura = 650
+        altura = max(390, janela.winfo_reqheight())
+        x = self.winfo_rootx() + (self.winfo_width() - largura) // 2
+        y = self.winfo_rooty() + (self.winfo_height() - altura) // 2
+        janela.geometry(f"{largura}x{altura}+{max(0, x)}+{max(0, y)}")
+        janela.lift()
+        janela.focus_force()
 
     # ------------------------------------------------------------------
     # Diálogos auxiliares
@@ -639,10 +688,37 @@ class JanelaPrincipal(tk.Tk):
         self._config["ultima_pasta_projeto"] = self._pasta_projeto
         self._config["ultima_pasta_saida"] = self._pasta_saida
         self._config["ultimo_modo"] = self._modo.get()
-        self._config["janela_largura"] = self.winfo_width()
-        self._config["janela_altura"] = self.winfo_height()
+        # Não grava as dimensões da tela inteira quando a janela está maximizada.
+        if self.state() == "normal":
+            self._config["janela_largura"] = self.winfo_width()
+            self._config["janela_altura"] = self.winfo_height()
         salvar_config(self._config)
 
     def _ao_fechar(self) -> None:
-        self._persistir_config()
+        if self._fechando:
+            return
+        self._fechando = True
+
+        try:
+            self._persistir_config()
+        except (OSError, tk.TclError):
+            # Falha ao salvar preferências nunca deve impedir o encerramento.
+            pass
+
+        if self._after_fila is not None:
+            try:
+                self.after_cancel(self._after_fila)
+            except tk.TclError:
+                pass
+
+        # Libera qualquer diálogo modal e encerra toda a árvore de janelas.
+        for janela in self.winfo_children():
+            if isinstance(janela, tk.Toplevel):
+                try:
+                    janela.grab_release()
+                    janela.destroy()
+                except tk.TclError:
+                    pass
+
+        self.quit()
         self.destroy()

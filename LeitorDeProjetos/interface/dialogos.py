@@ -13,16 +13,17 @@ from typing import Callable, Optional
 
 from configuracao.historico import EntradaHistorico, carregar_historico, limpar_historico
 
-# Nova paleta de cores: tons de azul escuro e preto
-COR_FUNDO = "#0d1b2a"          # fundo principal (azul muito escuro)
-COR_FUNDO_CARD = "#1a2b3c"     # cartões e áreas de conteúdo
-COR_FUNDO_CAMPO = "#16202a"    # campos de entrada
-COR_TEXTO = "#e0e0e8"          # texto principal (claro)
-COR_TEXTO_SECUNDARIO = "#9a9ab0"  # texto secundário
-COR_SUCESSO = "#4ade80"        # verde sucesso
-COR_ERRO = "#f87171"           # vermelho erro
-COR_DESTAQUE = "#3b5b9a"       # azul destaque
-COR_DESTAQUE_HOVER = "#2e4a8a" # hover destaque
+VERSAO = "1.0.3"
+
+COR_FUNDO = "#0b1220"
+COR_FUNDO_CARD = "#111c2e"
+COR_FUNDO_CAMPO = "#18263d"
+COR_TEXTO = "#f4f7fb"
+COR_TEXTO_SECUNDARIO = "#9fb0c8"
+COR_SUCESSO = "#4ade80"
+COR_ERRO = "#fb7185"
+COR_DESTAQUE = "#4f8cff"
+COR_DESTAQUE_HOVER = "#3978e6"
 
 
 def _centralizar_janela(janela: tk.Toplevel, largura: int, altura: int) -> None:
@@ -54,7 +55,6 @@ class JanelaPreVisualizacao(tk.Toplevel):
         self.title("Pré‑visualização")
         self.configure(bg=COR_FUNDO)
         self.transient(parent)
-        self.grab_set()
         _centralizar_janela(self, 560, 560)
 
         self._on_confirmar = on_confirmar
@@ -114,7 +114,9 @@ class JanelaPreVisualizacao(tk.Toplevel):
             text="Confirmar seleção",
             command=self._confirmar,
             bg=COR_DESTAQUE,
-            fg="#1e1e2e",
+            fg="#ffffff",
+            activebackground=COR_DESTAQUE_HOVER,
+            activeforeground="#ffffff",
             relief="flat",
             padx=12,
             pady=6,
@@ -164,7 +166,6 @@ class JanelaConfirmacaoSeguranca(tk.Toplevel):
         self.title("Confirmar processamento")
         self.configure(bg=COR_FUNDO)
         self.transient(parent)
-        self.grab_set()
         self.resizable(False, False)
         _centralizar_janela(self, 400, 220)
 
@@ -212,7 +213,8 @@ class JanelaConfirmacaoSeguranca(tk.Toplevel):
 
         tk.Button(
             botoes, text="Continuar", command=self._confirmar,
-            bg=COR_DESTAQUE, fg="#1e1e2e",
+            bg=COR_DESTAQUE, fg="#ffffff",
+            activebackground=COR_DESTAQUE_HOVER, activeforeground="#ffffff",
             relief="flat", padx=16, pady=6, cursor="hand2",
             font=("Segoe UI", 10, "bold"),
         ).pack(side="right")
@@ -228,7 +230,6 @@ class JanelaAjuda(tk.Toplevel):
         self.title("Sobre / Ajuda")
         self.configure(bg=COR_FUNDO)
         self.transient(parent)
-        self.grab_set()
         _centralizar_janela(self, 520, 480)
 
         container = tk.Frame(self, bg=COR_FUNDO)
@@ -244,6 +245,8 @@ class JanelaAjuda(tk.Toplevel):
         texto.tag_config("titulo", font=("Segoe UI", 11, "bold"), foreground=COR_DESTAQUE)
 
         conteudo = [
+            ("titulo", f"Leitor de Projetos {VERSAO}\n"),
+            (None, "Aplicativo para Windows.\n\n"),
             ("titulo", "Para que serve\n"),
             (None, "Transforma projetos de código em arquivos de texto, "
                     "para análise, documentação, compartilhamento e envio "
@@ -294,7 +297,6 @@ class JanelaHistorico(tk.Toplevel):
         self.title("Histórico")
         self.configure(bg=COR_FUNDO)
         self.transient(parent)
-        self.grab_set()
         _centralizar_janela(self, 520, 440)
 
         self._on_limpar = on_limpar
