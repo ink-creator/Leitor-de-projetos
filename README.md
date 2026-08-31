@@ -1,329 +1,788 @@
-# Project Reader -- English
+# Project Reader / Leitor de Projetos
 
-A tool for transforming code projects into organized text files, making it easier to read, analyze, document, and send projects to Artificial Intelligence tools.
+A desktop tool for transforming source-code projects into organized text files for **analysis, documentation, sharing and use with AI tools**.
 
-The project was created to simplify the process of gathering the contents of multiple project files into a format that can be easily viewed and shared.
+[English](#english) · [Português](#português)
 
-## What is it for?
+---
 
-When working with programming projects, you may need to analyze or send multiple files at once.
+## Demo
 
-Project Reader makes this process easier by gathering project information into text files.
+<!--
+Edit this README through GitHub and drag the compressed MP4 below.
+GitHub will generate a github.com/user-attachments/... link.
+Leave the generated link alone on its own line.
+-->
 
-Some possible uses include:
+---
 
-* Analyzing an entire project at once;
-* Sending project contents to an AI;
-* Sharing the structure and source code of a project;
-* Making code reviews easier;
-* Creating a textual representation of a project;
-* Organizing project contents for documentation.
+## Preview
 
-## How does it work?
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <strong>Main Interface</strong><br><br>
+      <img src="assets/screenshots/main-interface.png" alt="Project Reader main interface">
+    </td>
+    <td align="center" width="50%">
+      <strong>File Preview & Selection</strong><br><br>
+      <img src="assets/screenshots/file-preview.png" alt="Project Reader file preview">
+    </td>
+  </tr>
+</table>
 
-The tool scans the selected project and processes its files according to the configured settings.
+---
 
-The result is one or more text files containing the information needed to view and analyze the project without having to open every file individually.
+# English
 
-This can be particularly useful when working with AI tools, where providing the complete context of a project can make analysis much easier.
+## About
 
-## How to use
+**Project Reader** is a desktop tool built to simplify the process of preparing source-code projects for analysis.
 
-There are two main ways to use the project.
+Instead of manually opening, copying and organizing multiple files, the application scans a selected project and transforms its contents into one or more structured text files.
 
-### Executable
+This is especially useful when working with:
 
-For users who do not have Python installed, or simply want to use the tool directly, the compiled **LeitorDeProjetos-1.0.3.exe** is available.
+- AI tools
+- Code reviews
+- Documentation
+- Project analysis
+- Debugging
+- Refactoring
+- Sharing project context
 
-Open the repository's [**Releases** page](https://github.com/ink-creator/Leitor-de-projetos/releases), select the latest release and download the `.exe` under **Assets**.
+---
 
-This is the recommended option for users who only want to use the program without modifying its source code.
+## Why?
 
-### Source code
+A programming project may contain dozens or hundreds of files.
 
-You can also use the project directly from its source code.
+When you need to analyze the project as a whole, manually sending files one by one can be slow and inconvenient.
 
-This option is better suited for users who want to study, modify, or adapt the tool to their own needs.
-
-The main source code is located in:
-
-```text
-LeitorDeProjetos/
-```
-
-## Manual method
-
-The project also contains a folder called `manual`.
-
-This folder is not part of an automatic process performed by the program. Its purpose is to provide a way to perform the process manually, without depending on the tool.
-
-```text
-manual/
-```
-
-This can be useful when you want more control over which files are gathered or simply want to understand the process behind the tool.
-
-## Project structure
+Project Reader simplifies this workflow:
 
 ```text
-Leitor-de-projetos/
-│
-├── .github/
-│   └── workflows/
-│
-├── LeitorDeProjetos/
-│
-├── manual/
-│
-├── .gitignore
-│
-└── README.md
+Source-code project
+        ↓
+   Project Reader
+        ↓
+Filter and select files
+        ↓
+Generate organized text
+        ↓
+AI / Documentation / Review
 ```
 
-### `LeitorDeProjetos`
+---
 
-Contains the program's source code.
+## Features
 
-### `manual`
+### Project Selection
 
-Contains materials related to the manual process of reading and organizing project files.
+Choose any source-code project folder directly from the graphical interface.
 
-### `.github/workflows`
+The application scans the project while respecting the configured filters.
 
-Contains the files used by GitHub workflows.
+---
 
-## Using it with Artificial Intelligence
+### File Preview
 
-One of the main purposes of the project is to make working with code projects and Artificial Intelligence tools easier.
+Before processing a project, the **Preview** window displays the files found.
 
-Instead of having to select and send many files individually, the project allows the contents to be prepared in a more organized way.
+You can:
 
-For example:
+- Review detected files
+- Select which files should be processed
+- Remove unwanted files from the operation
+- Confirm the final selection before generating output
+
+This makes it possible to control exactly what project content is included.
+
+---
+
+## Processing Modes
+
+Project Reader supports two output modes.
+
+### Single File
+
+Combines the selected project structure and file contents into a single text file.
 
 ```text
 Project
-    |
-    v
-Project Reader
-    |
-    v
-Text file
-    |
-    v
-AI tool
-    |
-    v
-Project analysis
+├── index.html
+├── style.css
+└── script.js
+
+          ↓
+
+project.txt
 ```
 
-This can be useful for tasks such as:
+This mode is especially useful when the entire project needs to be sent or analyzed as one context.
 
-* Code analysis;
-* Finding problems;
-* Improvement suggestions;
-* Project explanations;
-* Documentation;
-* Refactoring;
-* Understanding project structure.
+### Separate Files
 
-## Be careful when sharing projects
+Creates individual text files for the source files found in the project.
 
-Before sending generated files to an AI or another person, review the project contents.
+```text
+index.html
+style.css
+script.js
 
-Text files generated from a project may contain information that should not be shared, such as:
+       ↓
+
+index.txt
+style.txt
+script.txt
+```
+
+This is useful when you want to inspect or share files separately.
+
+---
+
+## Configuration
+
+The application includes a graphical **Settings** area.
+
+It can be used to configure:
+
+- File extensions to process
+- File extensions to ignore
+- Folders to ignore
+- Specific files to ignore
+- Processing preferences
+
+These settings allow the scanner to skip unnecessary content such as build files, dependencies, caches or other files that are not relevant to the analysis.
+
+---
+
+## Saved Preferences
+
+Application preferences are stored locally.
+
+Depending on the current configuration, the program can remember information such as:
+
+- Last project folder
+- Processing mode
+- Window configuration
+- Filtering preferences
+
+This avoids having to configure the application again every time it is opened.
+
+---
+
+## History
+
+The graphical interface also includes a **History** area for accessing information related to previous operations.
+
+This helps make repeated use of the application easier when working with multiple projects.
+
+---
+
+## Using Project Reader with AI
+
+One of the main use cases of Project Reader is preparing programming projects for AI analysis.
+
+Instead of manually copying each file:
+
+```text
+Project
+   ↓
+Project Reader
+   ↓
+Organized TXT
+   ↓
+AI Tool
+   ↓
+Analysis
+```
+
+The generated content can be useful for:
+
+- Explaining a codebase
+- Finding bugs
+- Reviewing code
+- Suggesting improvements
+- Refactoring
+- Creating documentation
+- Understanding project architecture
+- Providing project context to an AI
+
+---
+
+## Security Notice
+
+Generated text files may contain everything present in the selected project.
+
+Before sharing them with another person or service, review the generated content.
+
+A project may contain sensitive information such as:
 
 ```text
 Passwords
-API Keys
-Tokens
+API keys
+Access tokens
 Credentials
-Personal information
 Private keys
-Sensitive configuration
+Personal information
+Environment configuration
+Database connection data
 ```
 
-Always review the generated content before sharing it.
+Project Reader does not determine whether project content is safe to share.
 
-## Technologies
+The user should always review the generated files before sending them elsewhere.
 
-The project was developed in Python.
+---
 
-A compiled `.exe` version is also available to make the tool easier to use for people who do not have a Python environment configured.
+## Downloading the Executable
 
-## Status
+A compiled Windows version is available through the repository's **Releases** page.
 
-Project in development.
-
-The goal is to keep Project Reader as a small, practical, and easy-to-use tool that can receive new features as new needs arise.
-
-License
-
-This project is available under the MIT License.
-
-See the LICENSE file for more information.
-
-------
-
-# Leitor de Projetos -- Português
-
-Uma ferramenta para transformar projetos de código em arquivos de texto organizados, facilitando a leitura, análise, documentação e o envio de projetos para ferramentas de Inteligência Artificial.
-
-O projeto foi desenvolvido para tornar mais simples a tarefa de reunir o conteúdo de vários arquivos de um projeto em um formato que possa ser visualizado e compartilhado facilmente.
-
-## Para que serve?
-
-Ao trabalhar com projetos de programação, pode ser necessário analisar ou enviar vários arquivos de uma só vez.
-
-O Leitor de Projetos facilita esse processo ao reunir as informações do projeto em arquivos de texto.
-
-Alguns exemplos de uso:
-
-* Analisar um projeto inteiro de uma vez;
-* Enviar o conteúdo de um projeto para uma IA;
-* Compartilhar a estrutura e o código de um projeto;
-* Facilitar revisões de código;
-* Criar uma representação textual de um projeto;
-* Organizar o conteúdo de projetos para documentação.
-
-## Como funciona?
-
-A ferramenta percorre o projeto selecionado e trabalha com seus arquivos de acordo com as configurações definidas.
-
-O resultado é um ou mais arquivos de texto contendo as informações necessárias para visualizar e analisar o projeto sem precisar abrir cada arquivo individualmente.
-
-Isso pode ser especialmente útil ao trabalhar com ferramentas de IA, nas quais fornecer o contexto completo de um projeto pode facilitar bastante a análise.
-
-## Como utilizar
-
-Existem duas formas principais de utilizar o projeto.
-
-### Executável
-
-Para quem não possui Python ou simplesmente quer utilizar a ferramenta diretamente, está disponível o **LeitorDeProjetos-1.0.3.exe**.
-
-Abra a página [**Releases** do repositório](https://github.com/ink-creator/Leitor-de-projetos/releases), entre na versão mais recente e baixe o `.exe` na seção **Assets**.
-
-Essa é a forma recomendada para quem quer apenas utilizar o programa sem modificar seu código.
-
-### Código-fonte
-
-Também é possível utilizar o projeto diretamente pelo código-fonte.
-
-Essa opção é mais adequada para quem deseja estudar, modificar ou adaptar a ferramenta às próprias necessidades.
-
-O código principal está localizado na pasta:
+Download the latest:
 
 ```text
-LeitorDeProjetos/
+LeitorDeProjetos-1.0.3.exe
 ```
 
-## Modo manual
+Then run it normally.
 
-O projeto também possui uma pasta chamada `manual`.
+No Python installation is required for users who only want to use the executable.
 
-Ela não representa uma parte automática do programa. Seu objetivo é disponibilizar uma forma de realizar o processo manualmente, sem depender da ferramenta.
+> [!NOTE]
+> Windows may display a warning about an unknown publisher because the executable is not digitally signed.
+
+---
+
+## Running from Source
+
+### Requirements
+
+- Python 3
+
+Clone or download the repository.
+
+Then run:
+
+```bash
+python LeitorDeProjetos/main.py
+```
+
+The application itself is designed to rely primarily on the Python standard library.
+
+---
+
+## Building the Executable
+
+To create the Windows executable, install PyInstaller:
+
+```bash
+pip install pyinstaller
+```
+
+Then run:
+
+```bash
+pyinstaller --onefile --windowed --name LeitorDeProjetos-1.0.3 LeitorDeProjetos/main.py
+```
+
+The generated file will be available in:
+
+```text
+dist/
+```
+
+---
+
+## Automated Releases
+
+The repository includes a **GitHub Actions** workflow.
+
+When a release tag is created and pushed, the workflow can build the Windows executable and publish it through GitHub Releases.
+
+Example:
+
+```bash
+git tag v1.0.3
+git push origin v1.0.3
+```
+
+This keeps the distributed executable tied to a specific version of the source code.
+
+---
+
+## Manual Version
+
+The repository also contains a:
 
 ```text
 manual/
 ```
 
-Essa opção pode ser útil quando você quer ter mais controle sobre quais arquivos serão reunidos ou simplesmente entender o processo por trás da ferramenta.
+directory.
 
-## Estrutura
+This contains scripts related to the original/manual method of processing projects.
+
+It can be useful for:
+
+- Understanding the basic processing logic
+- Running the process without the graphical application
+- Studying a simpler implementation
+- Manually controlling the output
+
+---
+
+## Technologies
+
+Project Reader uses:
+
+- Python
+- Tkinter
+- File system APIs
+- JSON configuration
+- PyInstaller
+- GitHub Actions
+
+The graphical application does not require a web browser or backend server.
+
+---
+
+## Project Structure
 
 ```text
 Leitor-de-projetos/
-│
 ├── .github/
 │   └── workflows/
+│       └── Build and release automation
+│
+├── assets/
+│   └── screenshots/
+│       ├── main-interface.png
+│       └── file-preview.png
 │
 ├── LeitorDeProjetos/
+│   ├── configuracao/
+│   ├── interface/
+│   ├── processadores/
+│   ├── utils/
+│   ├── main.py
+│   └── requirements.txt
 │
 ├── manual/
+│   └── Manual processing scripts
 │
 ├── .gitignore
-│
+├── LICENSE
 └── README.md
 ```
 
-### `LeitorDeProjetos`
+---
 
-Contém o código do programa.
+## Current Status
 
-### `manual`
+The application already provides the complete main workflow:
 
-Contém os materiais relacionados ao processo manual de leitura e organização dos arquivos.
+```text
+Select project
+      ↓
+Scan files
+      ↓
+Preview selection
+      ↓
+Choose processing mode
+      ↓
+Choose destination
+      ↓
+Generate text files
+```
 
-### `.github/workflows`
+The current distributed version is:
 
-Contém os arquivos utilizados pelos workflows do GitHub.
+```text
+1.0.3
+```
 
-## Uso com Inteligência Artificial
+Future updates can focus on improving filters, interface usability and project-processing options.
 
-Um dos principais objetivos do projeto é facilitar o uso de projetos de código com ferramentas de Inteligência Artificial.
+---
 
-Em vez de precisar selecionar e enviar diversos arquivos individualmente, o projeto permite preparar o conteúdo de uma forma mais organizada.
+# Português
 
-Por exemplo:
+## Sobre
+
+O **Leitor de Projetos** é uma ferramenta desktop criada para simplificar a preparação de projetos de código-fonte para análise.
+
+Em vez de abrir, copiar e organizar vários arquivos manualmente, a aplicação percorre um projeto selecionado e transforma seu conteúdo em um ou mais arquivos de texto organizados.
+
+Isso é especialmente útil para:
+
+- Ferramentas de IA
+- Revisão de código
+- Documentação
+- Análise de projetos
+- Depuração
+- Refatoração
+- Compartilhamento de contexto
+
+---
+
+## Por que usar?
+
+Um projeto de programação pode possuir dezenas ou centenas de arquivos.
+
+Quando é necessário analisar o projeto como um todo, enviar cada arquivo individualmente pode ser lento e inconveniente.
+
+O Leitor de Projetos simplifica esse processo:
+
+```text
+Projeto de código
+       ↓
+Leitor de Projetos
+       ↓
+Filtrar e selecionar arquivos
+       ↓
+Gerar texto organizado
+       ↓
+IA / Documentação / Revisão
+```
+
+---
+
+## Funcionalidades
+
+### Seleção de Projeto
+
+Qualquer pasta contendo um projeto de código pode ser selecionada diretamente pela interface gráfica.
+
+A aplicação percorre o projeto respeitando os filtros configurados.
+
+---
+
+### Pré-visualização de Arquivos
+
+Antes do processamento, a janela de **Pré-visualização** exibe os arquivos encontrados.
+
+É possível:
+
+- Conferir os arquivos detectados
+- Escolher quais serão processados
+- Remover arquivos desnecessários
+- Confirmar a seleção antes da geração
+
+Isso permite controlar exatamente quais informações do projeto serão incluídas.
+
+---
+
+## Modos de Processamento
+
+O Leitor de Projetos possui dois modos de saída.
+
+### Arquivo Único
+
+Reúne a estrutura e o conteúdo dos arquivos selecionados em um único arquivo de texto.
 
 ```text
 Projeto
-    |
-    v
-Leitor de Projetos
-    |
-    v
-Arquivo de texto
-    |
-    v
-Ferramenta de IA
-    |
-    v
-Análise do projeto
+├── index.html
+├── style.css
+└── script.js
+
+          ↓
+
+projeto.txt
 ```
 
-Isso pode ser útil para tarefas como:
+Esse modo é especialmente útil quando todo o projeto precisa ser enviado ou analisado como um único contexto.
 
-* Análise de código;
-* Identificação de problemas;
-* Sugestões de melhorias;
-* Explicação de projetos;
-* Documentação;
-* Refatoração;
-* Entendimento da estrutura de um projeto.
+### Arquivos Separados
 
-## Atenção ao compartilhar projetos
+Cria arquivos de texto individuais para os arquivos de código encontrados.
 
-Antes de enviar os arquivos gerados para uma IA ou outra pessoa, verifique o conteúdo do projeto.
+```text
+index.html
+style.css
+script.js
 
-Arquivos de texto gerados a partir de um projeto podem conter informações que não deveriam ser compartilhadas, como:
+       ↓
+
+index.txt
+style.txt
+script.txt
+```
+
+Esse modo é útil quando os arquivos precisam ser analisados ou compartilhados separadamente.
+
+---
+
+## Configurações
+
+A aplicação possui uma área gráfica de **Configurações**.
+
+Ela pode ser utilizada para controlar:
+
+- Extensões que devem ser processadas
+- Extensões que devem ser ignoradas
+- Pastas ignoradas
+- Arquivos específicos ignorados
+- Preferências de processamento
+
+Esses filtros permitem evitar conteúdo desnecessário, como dependências, arquivos temporários, caches, builds e outros elementos que não são importantes para a análise.
+
+---
+
+## Preferências Salvas
+
+As preferências da aplicação são armazenadas localmente.
+
+Dependendo da configuração atual, o programa pode lembrar informações como:
+
+- Última pasta utilizada
+- Modo de processamento
+- Configuração da janela
+- Preferências de filtragem
+
+Isso evita configurar novamente a aplicação a cada execução.
+
+---
+
+## Histórico
+
+A interface também possui uma área de **Histórico** relacionada às operações realizadas anteriormente.
+
+Isso facilita o uso recorrente da ferramenta ao trabalhar com diferentes projetos.
+
+---
+
+## Uso com Inteligência Artificial
+
+Um dos principais objetivos do Leitor de Projetos é preparar projetos de programação para análise por ferramentas de IA.
+
+Em vez de copiar arquivo por arquivo:
+
+```text
+Projeto
+   ↓
+Leitor de Projetos
+   ↓
+TXT organizado
+   ↓
+Ferramenta de IA
+   ↓
+Análise
+```
+
+O conteúdo gerado pode ser utilizado para:
+
+- Explicar uma base de código
+- Encontrar problemas
+- Revisar código
+- Sugerir melhorias
+- Refatorar
+- Criar documentação
+- Entender a arquitetura de um projeto
+- Fornecer contexto completo para uma IA
+
+---
+
+## Aviso de Segurança
+
+Os arquivos de texto gerados podem conter tudo que estiver presente no projeto selecionado.
+
+Antes de compartilhar o resultado com outra pessoa ou serviço, revise o conteúdo.
+
+Um projeto pode conter informações sensíveis como:
 
 ```text
 Senhas
-API Keys
+Chaves de API
 Tokens
 Credenciais
-Dados pessoais
 Chaves privadas
-Configurações sensíveis
+Informações pessoais
+Configurações de ambiente
+Dados de conexão com bancos
 ```
 
-Sempre revise o conteúdo antes de compartilhá-lo.
+O Leitor de Projetos não determina automaticamente se um conteúdo é seguro para compartilhamento.
+
+A revisão do arquivo gerado é responsabilidade do usuário.
+
+---
+
+## Baixando o Executável
+
+Uma versão compilada para Windows está disponível na área de **Releases** do repositório.
+
+Baixe a versão mais recente:
+
+```text
+LeitorDeProjetos-1.0.3.exe
+```
+
+Depois execute normalmente.
+
+Quem utiliza o `.exe` não precisa instalar Python.
+
+> [!NOTE]
+> O Windows pode mostrar um aviso de editor desconhecido porque o executável não possui assinatura digital.
+
+---
+
+## Executando pelo Código-Fonte
+
+### Requisitos
+
+- Python 3
+
+Baixe ou clone o repositório.
+
+Depois execute:
+
+```bash
+python LeitorDeProjetos/main.py
+```
+
+A aplicação foi desenvolvida para depender principalmente da biblioteca padrão do Python.
+
+---
+
+## Gerando o Executável
+
+Para criar o executável do Windows, instale o PyInstaller:
+
+```bash
+pip install pyinstaller
+```
+
+Depois execute:
+
+```bash
+pyinstaller --onefile --windowed --name LeitorDeProjetos-1.0.3 LeitorDeProjetos/main.py
+```
+
+O arquivo será gerado em:
+
+```text
+dist/
+```
+
+---
+
+## Releases Automatizadas
+
+O repositório possui um workflow do **GitHub Actions**.
+
+Ao criar e enviar uma tag de versão, o workflow pode gerar o executável do Windows e publicá-lo através do GitHub Releases.
+
+Exemplo:
+
+```bash
+git tag v1.0.3
+git push origin v1.0.3
+```
+
+Isso mantém o executável distribuído associado a uma versão específica do código-fonte.
+
+---
+
+## Versão Manual
+
+O repositório também possui a pasta:
+
+```text
+manual/
+```
+
+Ela contém scripts relacionados ao método original/manual de processamento dos projetos.
+
+Essa versão pode ser útil para:
+
+- Entender a lógica básica do processamento
+- Executar o processo sem a interface gráfica
+- Estudar uma implementação mais simples
+- Controlar manualmente a geração dos arquivos
+
+---
 
 ## Tecnologias
 
-O projeto foi desenvolvido em Python.
+O Leitor de Projetos utiliza:
 
-Também existe uma versão compilada em `.exe` para facilitar o uso por pessoas que não possuem o ambiente Python configurado.
+- Python
+- Tkinter
+- APIs do sistema de arquivos
+- Configurações em JSON
+- PyInstaller
+- GitHub Actions
 
-## Status
+A aplicação gráfica não depende de navegador ou servidor backend.
 
-Projeto em desenvolvimento.
+---
 
-A proposta é manter o Leitor de Projetos como uma ferramenta pequena, prática e fácil de utilizar, podendo receber novas funcionalidades conforme surgirem novas necessidades.
+## Estrutura do Projeto
 
-## Licença
+```text
+Leitor-de-projetos/
+├── .github/
+│   └── workflows/
+│       └── Automação de build e releases
+│
+├── assets/
+│   └── screenshots/
+│       ├── main-interface.png
+│       └── file-preview.png
+│
+├── LeitorDeProjetos/
+│   ├── configuracao/
+│   ├── interface/
+│   ├── processadores/
+│   ├── utils/
+│   ├── main.py
+│   └── requirements.txt
+│
+├── manual/
+│   └── Scripts de processamento manual
+│
+├── .gitignore
+├── LICENSE
+└── README.md
+```
 
-Este projeto está licenciado sob a MIT License.
+---
 
-Consulte o arquivo [LICENSE](LICENSE) para mais informações.
+## Estado Atual
+
+A aplicação já cobre o fluxo principal completo:
+
+```text
+Selecionar projeto
+       ↓
+Percorrer arquivos
+       ↓
+Pré-visualizar seleção
+       ↓
+Escolher modo
+       ↓
+Escolher destino
+       ↓
+Gerar arquivos de texto
+```
+
+A versão atualmente distribuída é:
+
+```text
+1.0.3
+```
+
+Atualizações futuras podem focar em novos filtros, melhorias de interface e mais opções de processamento.
+
+---
+
+## License / Licença
+
+This project is available under the **MIT License**.
+
+Este projeto está disponível sob a **Licença MIT**.
+
+See / Consulte `LICENSE`.
