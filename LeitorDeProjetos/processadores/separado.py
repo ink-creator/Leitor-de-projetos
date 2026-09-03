@@ -34,6 +34,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Optional
 
+from configuracao.idiomas import IDIOMA_PADRAO, traduzir
 from utils.arquivos import eh_arquivo_sensivel
 
 
@@ -106,6 +107,7 @@ def processar(
     on_progresso: Optional[ProgressoCallback] = None,
     on_erro: Optional[ErroCallback] = None,
     arquivos_processaveis: list[str] | None = None,
+    idioma: str = IDIOMA_PADRAO,
 ) -> ResultadoProcessamento:
     """
     Executa o processamento "arquivo único": percorre o projeto e
@@ -136,8 +138,7 @@ def processar(
     processados_com_sucesso = 0
 
     with open(caminho_arquivo_saida, "w", encoding="utf-8") as saida:
-        titulo = f"RESUMO DO PROJETO: {caminho_projeto}\n\n"
-        saida.write(titulo)
+        saida.write(traduzir("resumo_projeto", idioma, caminho=caminho_projeto))
 
         for indice, caminho_completo in enumerate(processaveis, start=1):
             nome_exibicao = os.path.relpath(caminho_completo, caminho_projeto)
@@ -149,30 +150,30 @@ def processar(
                     total=total,
                 ))
 
-            saida.write(f"ARQUIVO: {nome_exibicao}\n")
+            saida.write(traduzir("arquivo_saida", idioma, nome=nome_exibicao))
 
             try:
                 with open(caminho_completo, "r", encoding="utf-8") as f:
                     conteudo = f.read()
-                saida.write("CONTEÚDO:\n")
+                saida.write(traduzir("conteudo_saida", idioma))
                 saida.write(conteudo)
                 saida.write("\n\n")
                 processados_com_sucesso += 1
             except PermissionError:
-                motivo = "Acesso negado."
-                saida.write(f"[AVISO] Não foi possível ler. Motivo: {motivo}\n\n")
+                motivo = traduzir("acesso_negado", idioma)
+                saida.write(traduzir("aviso_leitura_saida", idioma, motivo=motivo))
                 erros.append(f"{nome_exibicao}: {motivo}")
                 if on_erro:
                     on_erro(nome_exibicao, motivo)
             except UnicodeDecodeError:
-                motivo = "Arquivo não é texto legível (possível binário)."
-                saida.write(f"[AVISO] Não foi possível ler. Motivo: {motivo}\n\n")
+                motivo = traduzir("arquivo_nao_texto", idioma)
+                saida.write(traduzir("aviso_leitura_saida", idioma, motivo=motivo))
                 erros.append(f"{nome_exibicao}: {motivo}")
                 if on_erro:
                     on_erro(nome_exibicao, motivo)
             except OSError as e:
                 motivo = str(e)
-                saida.write(f"[AVISO] Não foi possível ler. Motivo: {motivo}\n\n")
+                saida.write(traduzir("aviso_leitura_saida", idioma, motivo=motivo))
                 erros.append(f"{nome_exibicao}: {motivo}")
                 if on_erro:
                     on_erro(nome_exibicao, motivo)

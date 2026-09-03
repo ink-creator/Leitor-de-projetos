@@ -21,6 +21,7 @@ from tkinter import filedialog, messagebox, ttk
 
 from configuracao.config import carregar_config, salvar_config
 from configuracao.historico import adicionar_entrada
+from configuracao.idiomas import IDIOMA_PADRAO, IDIOMAS_SUPORTADOS, traduzir
 from interface.configuracoes import JanelaConfiguracoes
 from interface.dialogos import (
     JanelaAjuda,
@@ -47,14 +48,14 @@ MODO_ARQUIVO_UNICO = "separado"
 MODO_ARQUIVOS_SEPARADOS = "junto"
 VERSAO = "1.0.3"
 
-DESCRICAO_MODO = {
-    MODO_ARQUIVO_UNICO: "Cria um único arquivo TXT contendo a estrutura e o conteúdo dos arquivos selecionados.",
-    MODO_ARQUIVOS_SEPARADOS: "Cria arquivos TXT separados para cada arquivo de código encontrado.",
+CHAVE_DESCRICAO_MODO = {
+    MODO_ARQUIVO_UNICO: "descricao_arquivo_unico",
+    MODO_ARQUIVOS_SEPARADOS: "descricao_arquivos_separados",
 }
 
-NOME_MODO_EXIBICAO = {
-    MODO_ARQUIVO_UNICO: "Arquivo único",
-    MODO_ARQUIVOS_SEPARADOS: "Arquivos separados",
+CHAVE_NOME_MODO = {
+    MODO_ARQUIVO_UNICO: "modo_arquivo_unico",
+    MODO_ARQUIVOS_SEPARADOS: "modo_arquivos_separados",
 }
 
 
@@ -62,12 +63,14 @@ class JanelaPrincipal(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.title(f"Leitor de Projetos {VERSAO}")
         self.configure(bg=COR_FUNDO)
         self._fechando = False
         self._after_fila: str | None = None
 
         self._config = carregar_config()
+        if self._config.get("idioma") not in IDIOMAS_SUPORTADOS:
+            self._config["idioma"] = IDIOMA_PADRAO
+        self.title(self._t("titulo_janela", versao=VERSAO))
 
         largura = self._config.get("janela_largura", 900)
         altura = self._config.get("janela_altura", 640)
@@ -93,6 +96,9 @@ class JanelaPrincipal(tk.Tk):
         self._arquivos_selecionados: list[str] | None = None
         self._arquivos_ignorados: list[str] | None = None
 
+    def _t(self, chave: str, **valores: object) -> str:
+        return traduzir(chave, self._config.get("idioma", IDIOMA_PADRAO), **valores)
+
     def _maximizar(self) -> None:
         if self._fechando:
             return
@@ -111,14 +117,13 @@ class JanelaPrincipal(tk.Tk):
         topo.pack(fill="x", padx=40, pady=(28, 4))
 
         tk.Label(
-            topo, text="Leitor de Projetos",
+            topo, text=self._t("titulo_app"),
             font=("Segoe UI Variable Display", 22, "bold"),
             bg=COR_FUNDO, fg=COR_TEXTO,
         ).pack(anchor="w")
         tk.Label(
             topo,
-            text="Ferramenta para transformar projetos de código em arquivos de texto\n"
-                 "para análise, compartilhamento e uso com IAs.",
+            text=self._t("descricao_app"),
             font=("Segoe UI", 10),
             bg=COR_FUNDO, fg=COR_TEXTO_SECUNDARIO,
             justify="left",
@@ -128,9 +133,9 @@ class JanelaPrincipal(tk.Tk):
         barra_acoes.pack(fill="x", padx=40, pady=(14, 0))
 
         for texto, comando in [
-            ("Configurações", self._abrir_configuracoes),
-            ("Ajuda", self._abrir_ajuda),
-            ("Histórico", self._abrir_historico),
+            (self._t("configuracoes"), self._abrir_configuracoes),
+            (self._t("ajuda"), self._abrir_ajuda),
+            (self._t("historico"), self._abrir_historico),
         ]:
             tk.Button(
                 barra_acoes, text=texto, command=comando,
@@ -163,7 +168,7 @@ class JanelaPrincipal(tk.Tk):
         interno.pack(fill="x", padx=16, pady=12)
 
         tk.Label(
-            interno, text="Projeto selecionado",
+            interno, text=self._t("projeto_selecionado"),
             font=("Segoe UI", 10, "bold"),
             bg=COR_FUNDO_CARD, fg=COR_TEXTO,
         ).pack(anchor="w")
@@ -180,14 +185,14 @@ class JanelaPrincipal(tk.Tk):
         self._label_pasta_projeto.pack(side="left", fill="x", expand=True)
 
         tk.Button(
-            linha, text="Selecionar pasta", command=self._selecionar_pasta_projeto,
+            linha, text=self._t("selecionar_pasta"), command=self._selecionar_pasta_projeto,
             bg=COR_DESTAQUE, fg="#ffffff", activebackground=COR_DESTAQUE_HOVER,
             activeforeground="#ffffff", relief="flat", bd=0,
             padx=12, pady=6, cursor="hand2", font=("Segoe UI", 9, "bold"),
         ).pack(side="left", padx=(8, 0))
 
         tk.Button(
-            linha, text="Abrir pasta", command=lambda: self._abrir_no_explorador(self._pasta_projeto),
+            linha, text=self._t("abrir_pasta"), command=lambda: self._abrir_no_explorador(self._pasta_projeto),
             bg=COR_FUNDO_CAMPO, fg=COR_TEXTO_SECUNDARIO, relief="flat",
             padx=12, pady=6, cursor="hand2", font=("Segoe UI", 9),
         ).pack(side="left", padx=(8, 0))
@@ -196,7 +201,7 @@ class JanelaPrincipal(tk.Tk):
         pre_viz.pack(fill="x", pady=(10, 0))
 
         tk.Button(
-            pre_viz, text="Pré-visualizar arquivos", command=self._pre_visualizar,
+            pre_viz, text=self._t("pre_visualizar_arquivos"), command=self._pre_visualizar,
             bg=COR_FUNDO_CAMPO, fg=COR_TEXTO, relief="flat",
             padx=12, pady=6, cursor="hand2", font=("Segoe UI", 9),
         ).pack(side="left")
@@ -204,7 +209,7 @@ class JanelaPrincipal(tk.Tk):
     def _texto_pasta_projeto(self) -> str:
         if self._pasta_projeto:
             return self._pasta_projeto
-        return "Nenhuma pasta selecionada. Escolha um projeto para começar."
+        return self._t("nenhuma_pasta_selecionada")
 
     def _montar_secao_modo(self, parent: tk.Widget) -> None:
         card = self._card(parent)
@@ -212,7 +217,7 @@ class JanelaPrincipal(tk.Tk):
         interno.pack(fill="x", padx=16, pady=12)
 
         tk.Label(
-            interno, text="Modo de processamento",
+            interno, text=self._t("modo_processamento"),
             font=("Segoe UI", 10, "bold"),
             bg=COR_FUNDO_CARD, fg=COR_TEXTO,
         ).pack(anchor="w")
@@ -220,7 +225,8 @@ class JanelaPrincipal(tk.Tk):
         opcoes = tk.Frame(interno, bg=COR_FUNDO_CARD)
         opcoes.pack(fill="x", pady=(8, 0))
 
-        for modo, nome in NOME_MODO_EXIBICAO.items():
+        for modo, chave_nome in CHAVE_NOME_MODO.items():
+            nome = self._t(chave_nome)
             linha_opcao = tk.Frame(opcoes, bg=COR_FUNDO_CARD)
             linha_opcao.pack(fill="x", pady=2)
 
@@ -232,7 +238,7 @@ class JanelaPrincipal(tk.Tk):
             ).pack(anchor="w")
 
             tk.Label(
-                linha_opcao, text=DESCRICAO_MODO[modo],
+                linha_opcao, text=self._t(CHAVE_DESCRICAO_MODO[modo]),
                 font=("Segoe UI", 9),
                 bg=COR_FUNDO_CARD, fg=COR_TEXTO_SECUNDARIO,
             ).pack(anchor="w", padx=(24, 0))
@@ -243,7 +249,7 @@ class JanelaPrincipal(tk.Tk):
         interno.pack(fill="x", padx=16, pady=12)
 
         tk.Label(
-            interno, text="Pasta de destino",
+            interno, text=self._t("pasta_destino"),
             font=("Segoe UI", 10, "bold"),
             bg=COR_FUNDO_CARD, fg=COR_TEXTO,
         ).pack(anchor="w")
@@ -261,13 +267,13 @@ class JanelaPrincipal(tk.Tk):
 
         # Renomeado para evitar duplicação de texto de botão "Selecionar pasta"
         tk.Button(
-            linha, text="Selecionar pasta de saída", command=self._selecionar_pasta_saida,
+            linha, text=self._t("selecionar_pasta_saida"), command=self._selecionar_pasta_saida,
             bg=COR_FUNDO_CAMPO, fg=COR_TEXTO, relief="flat",
             padx=12, pady=6, cursor="hand2", font=("Segoe UI", 9),
         ).pack(side="left", padx=(8, 0))
 
         tk.Button(
-            linha, text="Abrir pasta", command=lambda: self._abrir_no_explorador(self._pasta_saida_efetiva()),
+            linha, text=self._t("abrir_pasta"), command=lambda: self._abrir_no_explorador(self._pasta_saida_efetiva()),
             bg=COR_FUNDO_CAMPO, fg=COR_TEXTO_SECUNDARIO, relief="flat",
             padx=12, pady=6, cursor="hand2", font=("Segoe UI", 9),
         ).pack(side="left", padx=(8, 0))
@@ -275,7 +281,7 @@ class JanelaPrincipal(tk.Tk):
     def _texto_pasta_saida(self) -> str:
         if self._pasta_saida:
             return self._pasta_saida
-        return f"Padrão: {obter_pasta_saida_padrao()}"
+        return self._t("padrao_caminho", caminho=obter_pasta_saida_padrao())
 
     def _pasta_saida_efetiva(self) -> str:
         return self._pasta_saida or str(obter_pasta_saida_padrao())
@@ -288,7 +294,7 @@ class JanelaPrincipal(tk.Tk):
         interno.pack(fill="x", padx=16, pady=12)
 
         self._label_status_progresso = tk.Label(
-            interno, text="Processando projeto...",
+            interno, text=self._t("processando_projeto"),
             font=("Segoe UI", 10, "bold"),
             bg=COR_FUNDO_CARD, fg=COR_TEXTO,
         )
@@ -316,7 +322,7 @@ class JanelaPrincipal(tk.Tk):
         self._barra_inferior.pack(fill="x", pady=(8, 0))
 
         self._botao_gerar = tk.Button(
-            self._barra_inferior, text="Gerar arquivos",
+            self._barra_inferior, text=self._t("gerar_arquivos"),
             command=self._iniciar_fluxo_processamento,
             bg=COR_DESTAQUE, fg="#ffffff", activebackground=COR_DESTAQUE_HOVER,
             activeforeground="#ffffff", relief="flat", bd=0,
@@ -337,7 +343,7 @@ class JanelaPrincipal(tk.Tk):
     # ------------------------------------------------------------------
 
     def _selecionar_pasta_projeto(self) -> None:
-        pasta = filedialog.askdirectory(title="Selecionar pasta do projeto")
+        pasta = filedialog.askdirectory(title=self._t("selecionar_pasta_projeto_titulo"))
         if not pasta:
             return
         self._pasta_projeto = pasta
@@ -345,7 +351,7 @@ class JanelaPrincipal(tk.Tk):
         self._persistir_config()
 
     def _selecionar_pasta_saida(self) -> None:
-        pasta = filedialog.askdirectory(title="Selecionar pasta de destino")
+        pasta = filedialog.askdirectory(title=self._t("selecionar_pasta_destino_titulo"))
         if not pasta:
             return
         self._pasta_saida = pasta
@@ -354,7 +360,7 @@ class JanelaPrincipal(tk.Tk):
 
     def _abrir_no_explorador(self, caminho: str) -> None:
         if not caminho or not os.path.isdir(caminho):
-            messagebox.showinfo("Pasta não encontrada", "Selecione uma pasta válida primeiro.")
+            messagebox.showinfo(self._t("pasta_nao_encontrada"), self._t("selecione_pasta_valida"))
             return
 
         if sys.platform == "win32":
@@ -384,6 +390,7 @@ class JanelaPrincipal(tk.Tk):
             ignorados,
             self._pasta_projeto,
             on_confirmar=self._atualizar_selecao,
+            idioma=self._config.get("idioma", IDIOMA_PADRAO),
         )
 
     def _atualizar_selecao(self, selecionados: list[str], ignorados: list[str]) -> None:
@@ -420,10 +427,10 @@ class JanelaPrincipal(tk.Tk):
 
     def _validar_projeto_selecionado(self) -> bool:
         if not self._pasta_projeto:
-            messagebox.showwarning("Nenhum projeto selecionado", "Selecione uma pasta de projeto primeiro.")
+            messagebox.showwarning(self._t("nenhum_projeto_selecionado"), self._t("selecione_projeto_primeiro"))
             return False
         if not os.path.isdir(self._pasta_projeto):
-            messagebox.showerror("Pasta inválida", "A pasta do projeto selecionada não existe mais.")
+            messagebox.showerror(self._t("pasta_invalida"), self._t("pasta_projeto_nao_existe"))
             return False
         return True
 
@@ -436,7 +443,7 @@ class JanelaPrincipal(tk.Tk):
             return
 
         if self._thread_processamento and self._thread_processamento.is_alive():
-            messagebox.showinfo("Em andamento", "Já existe um processamento em execução.")
+            messagebox.showinfo(self._t("em_andamento"), self._t("processamento_em_execucao"))
             return
 
         processaveis, ignorados = self._listar_arquivos_modo_atual()
@@ -447,6 +454,7 @@ class JanelaPrincipal(tk.Tk):
             total_processar=len(processaveis),
             total_sensiveis_ignorados=sensiveis,
             on_confirmar=self._executar_processamento,
+            idioma=self._config.get("idioma", IDIOMA_PADRAO),
         )
 
     def _listar_com_contagem_sensiveis(self) -> tuple[list[str], list[str], int]:
@@ -481,7 +489,7 @@ class JanelaPrincipal(tk.Tk):
         def worker() -> None:
             try:
                 if modo == MODO_ARQUIVO_UNICO:
-                    nome_arquivo = f"arquivo_{datetime.datetime.now():%d_%H_%M}.txt"
+                    nome_arquivo = f"{self._t('prefixo_arquivo_saida')}_{datetime.datetime.now():%d_%H_%M}.txt"
                     resultado = separado.processar(
                         caminho_projeto=self._pasta_projeto,
                         caminho_saida_dir=pasta_saida,
@@ -492,9 +500,10 @@ class JanelaPrincipal(tk.Tk):
                         on_progresso=on_progresso,
                         on_erro=on_erro,
                         arquivos_processaveis=self._arquivos_selecionados,
+                        idioma=self._config.get("idioma", IDIOMA_PADRAO),
                     )
                 else:
-                    nome_subpasta = f"resumo_{datetime.datetime.now():%d-%m-%Y_%Hh}"
+                    nome_subpasta = f"{self._t('prefixo_resumo_saida')}_{datetime.datetime.now():%d-%m-%Y_%Hh}"
                     pasta_saida_final = os.path.join(pasta_saida, nome_subpasta)
                     resultado = junto.processar(
                         caminho_projeto=self._pasta_projeto,
@@ -505,6 +514,7 @@ class JanelaPrincipal(tk.Tk):
                         on_progresso=on_progresso,
                         on_erro=on_erro,
                         arquivos_processaveis=self._arquivos_selecionados,
+                        idioma=self._config.get("idioma", IDIOMA_PADRAO),
                     )
                 self._fila_eventos.put(("concluido", resultado))
             except Exception as e:
@@ -523,7 +533,7 @@ class JanelaPrincipal(tk.Tk):
 
                 if tipo == "progresso":
                     evento = dados
-                    self._label_arquivo_atual.config(text=f"Arquivo atual:\n{evento.arquivo_atual}")
+                    self._label_arquivo_atual.config(text=self._t("arquivo_atual", arquivo=evento.arquivo_atual))
                     self._label_contador.config(text=f"{evento.atual} / {evento.total}")
                     if evento.total > 0:
                         self._barra_progresso["value"] = (evento.atual / evento.total) * 100
@@ -531,11 +541,11 @@ class JanelaPrincipal(tk.Tk):
                 elif tipo == "erro":
                     caminho, motivo = dados
                     self._label_status_progresso.config(
-                        text=f"[AVISO] Não foi possível ler: {caminho} — {motivo}",
+                        text=self._t("aviso_nao_foi_possivel_ler", caminho=caminho, motivo=motivo),
                         fg=COR_AVISO,
                     )
                     self.after(1800, lambda: self._label_status_progresso.config(
-                        text="Processando projeto...", fg=COR_TEXTO,
+                        text=self._t("processando_projeto"), fg=COR_TEXTO,
                     ))
 
                 elif tipo == "concluido":
@@ -545,7 +555,7 @@ class JanelaPrincipal(tk.Tk):
                 elif tipo == "falha":
                     self._botao_gerar.config(state="normal")
                     self._card_progresso.pack_forget()
-                    messagebox.showerror("Erro no processamento", f"Ocorreu um erro:\n{dados}")
+                    messagebox.showerror(self._t("erro_processamento"), self._t("ocorreu_erro", erro=dados))
                     return
 
         except queue.Empty:
@@ -573,7 +583,7 @@ class JanelaPrincipal(tk.Tk):
 
     def _mostrar_resultado(self, resultado) -> None:
         janela = tk.Toplevel(self)
-        janela.title("Transferência concluída")
+        janela.title(self._t("transferencia_concluida"))
         janela.configure(bg=COR_FUNDO)
         janela.transient(self)
         janela.resizable(False, False)
@@ -583,22 +593,22 @@ class JanelaPrincipal(tk.Tk):
         corpo.pack(fill="both", expand=True, padx=30, pady=26)
 
         tk.Label(
-            corpo, text="✓  Transferência concluída",
+            corpo, text=self._t("transferencia_concluida_check"),
             font=("Segoe UI Variable Display", 17, "bold"),
             bg=COR_FUNDO, fg=COR_SUCESSO,
         ).pack(anchor="w")
         tk.Label(
-            corpo, text="Os arquivos foram gerados com sucesso.",
+            corpo, text=self._t("arquivos_gerados_sucesso"),
             font=("Segoe UI", 10), bg=COR_FUNDO, fg=COR_TEXTO_SECUNDARIO,
         ).pack(anchor="w", pady=(4, 18))
 
         resumo = tk.Frame(corpo, bg=COR_FUNDO)
         resumo.pack(fill="x")
         metricas = [
-            ("ENCONTRADOS", resultado.encontrados),
-            ("PROCESSADOS", resultado.processados),
-            ("IGNORADOS", resultado.ignorados),
-            ("ERROS", len(resultado.erros)),
+            (self._t("encontrados"), resultado.encontrados),
+            (self._t("processados"), resultado.processados),
+            (self._t("ignorados"), resultado.ignorados),
+            (self._t("erros"), len(resultado.erros)),
         ]
         for coluna, (rotulo, valor) in enumerate(metricas):
             card = tk.Frame(
@@ -617,7 +627,7 @@ class JanelaPrincipal(tk.Tk):
             ).pack(pady=(1, 10), padx=10)
 
         tk.Label(
-            corpo, text="Salvo em", font=("Segoe UI", 9, "bold"),
+            corpo, text=self._t("salvo_em"), font=("Segoe UI", 9, "bold"),
             bg=COR_FUNDO, fg=COR_TEXTO,
         ).pack(anchor="w", pady=(18, 6))
         caminho_box = tk.Frame(corpo, bg=COR_FUNDO_CAMPO)
@@ -637,19 +647,19 @@ class JanelaPrincipal(tk.Tk):
             self._abrir_no_explorador(alvo)
 
         tk.Button(
-            botoes, text="Abrir local do resultado", command=abrir_resultado,
+            botoes, text=self._t("abrir_local_resultado"), command=abrir_resultado,
             bg=COR_DESTAQUE, fg="#ffffff", activebackground=COR_DESTAQUE_HOVER,
             activeforeground="#ffffff", relief="flat", bd=0,
             padx=16, pady=9, cursor="hand2", font=("Segoe UI", 9, "bold"),
         ).pack(side="left")
 
         tk.Button(
-            botoes, text="Fechar aplicativo", command=self._ao_fechar,
+            botoes, text=self._t("fechar_aplicativo"), command=self._ao_fechar,
             bg=COR_FUNDO_CARD, fg=COR_TEXTO_SECUNDARIO, relief="flat",
             padx=14, pady=8, cursor="hand2", font=("Segoe UI", 9),
         ).pack(side="right", padx=(8, 0))
         tk.Button(
-            botoes, text="Continuar", command=janela.destroy,
+            botoes, text=self._t("continuar"), command=janela.destroy,
             bg=COR_FUNDO_CAMPO, fg=COR_TEXTO, relief="flat",
             padx=14, pady=8, cursor="hand2", font=("Segoe UI", 9),
         ).pack(side="right")
@@ -671,14 +681,28 @@ class JanelaPrincipal(tk.Tk):
         JanelaConfiguracoes(self, self._config, self._ao_salvar_configuracoes)
 
     def _ao_salvar_configuracoes(self, nova_config: dict) -> None:
+        idioma_anterior = self._config.get("idioma", IDIOMA_PADRAO)
         self._config = nova_config
         self._persistir_config()
 
+        if self._config.get("idioma", IDIOMA_PADRAO) != idioma_anterior:
+            self.after_idle(self._reconstruir_interface)
+
+    def _reconstruir_interface(self) -> None:
+        if self._fechando:
+            return
+
+        self.title(self._t("titulo_janela", versao=VERSAO))
+        for widget in list(self.winfo_children()):
+            if not isinstance(widget, tk.Toplevel):
+                widget.destroy()
+        self._montar_layout()
+
     def _abrir_ajuda(self) -> None:
-        JanelaAjuda(self)
+        JanelaAjuda(self, idioma=self._config.get("idioma", IDIOMA_PADRAO))
 
     def _abrir_historico(self) -> None:
-        JanelaHistorico(self)
+        JanelaHistorico(self, idioma=self._config.get("idioma", IDIOMA_PADRAO))
 
     # ------------------------------------------------------------------
     # Persistência

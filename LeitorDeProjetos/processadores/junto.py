@@ -24,6 +24,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Optional
 
+from configuracao.idiomas import IDIOMA_PADRAO, traduzir
 from utils.arquivos import eh_arquivo_sensivel
 
 
@@ -96,6 +97,7 @@ def processar(
     on_progresso: Optional[ProgressoCallback] = None,
     on_erro: Optional[ErroCallback] = None,
     arquivos_processaveis: list[str] | None = None,
+    idioma: str = IDIOMA_PADRAO,
 ) -> ResultadoProcessamento:
     """
     Executa o processamento "arquivos separados": para cada arquivo
@@ -143,19 +145,19 @@ def processar(
             caminho_destino = os.path.join(pasta_destino, nome_txt)
 
             with open(caminho_destino, "w", encoding="utf-8") as novo_arquivo:
-                novo_arquivo.write(f"Arquivo original: {nome_exibicao}\n\n")
-                novo_arquivo.write("Conteúdo:\n\n")
+                novo_arquivo.write(traduzir("arquivo_original", idioma, nome=nome_exibicao))
+                novo_arquivo.write(traduzir("conteudo_arquivo", idioma))
                 novo_arquivo.write(conteudo)
 
             processados_com_sucesso += 1
 
         except PermissionError:
-            motivo = "Acesso negado."
+            motivo = traduzir("acesso_negado", idioma)
             erros.append(f"{nome_exibicao}: {motivo}")
             if on_erro:
                 on_erro(nome_exibicao, motivo)
         except UnicodeDecodeError:
-            motivo = "Arquivo não é texto legível (possível binário)."
+            motivo = traduzir("arquivo_nao_texto", idioma)
             erros.append(f"{nome_exibicao}: {motivo}")
             if on_erro:
                 on_erro(nome_exibicao, motivo)

@@ -55,6 +55,7 @@ CONFIG_PADRAO: dict[str, Any] = {
     "arquivos_ignorados": list(ARQUIVOS_IGNORADOS_PADRAO),
     "janela_largura": 900,
     "janela_altura": 640,
+    "idioma": "pt_BR",
 }
 
 
